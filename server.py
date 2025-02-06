@@ -2,19 +2,7 @@ from flask import Flask, request
 import numpy as np
 import pyaudio
 import wave
-
-def save_frames_to_file(frame_data, filename):
-    audio = pyaudio.PyAudio()
-    FORMAT = pyaudio.paInt16
-    SAMPLING_RATE = 22050
-    NUM_CHANNELS = 1
-
-    waveFile = wave.open(filename, 'wb')
-    waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-    waveFile.setnchannels(NUM_CHANNELS)
-    waveFile.setframerate(SAMPLING_RATE)
-    waveFile.writeframes(bytes(frame_data))
-    waveFile.close()
+from utils import save_frames_to_file
 
 app = Flask(__name__)
 file_counter = 0
