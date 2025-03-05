@@ -1,8 +1,15 @@
-from flask import Flask, request
 import numpy as np
 import pyaudio
 import wave
 from scipy.io.wavfile import read
+import shlex
+import subprocess
+import mido
+import random
+import os
+
+def generate_id():
+    return ''.join([str(random.randint(0, 9)) for _ in range(8)])
 
 def wav_to_np(wav_filename):
     file_contents = read(wav_filename)
@@ -21,3 +28,138 @@ def save_frames_to_file(frame_data, filename):
     waveFile.setframerate(SAMPLING_RATE)
     waveFile.writeframes(bytes(frame_data))
     waveFile.close()
+
+def convert_to_midi(input_audio, output_filename, ignore_warnings=True):
+    command = f'transkun {input_audio} {output_filename}'
+    command_args = shlex.split(command)
+    if ignore_warnings:
+        subprocess.run(command_args, stderr=subprocess.DEVNULL)
+    else:
+        subprocess.run(command_args)
+
+def display_midi(midi_filename):
+    mid = mido.MidiFile(midi_filename)
+    for msg in mid:
+        print(msg)
+
+def combine_midi(midi_filename1, midi_filename2, output_filename):
+    START_END_THRESHOLD = 0.25
+    
+    mid1 = mido.MidiFile(midi_filename1)
+    mid1.tracks = [mido.merge_tracks(mid1.tracks)]
+
+    mid2 = mido.MidiFile(midi_filename2)
+    mid2.tracks = [mido.merge_tracks(mid2.tracks)]
+
+    output_mid = mido.MidiFile(midi_filename1)
+    track = mido.MidiTrack()
+    output_mid.tracks = [track]
+
+    idxs_1 = set()
+    notes_1 = set()
+    idxs_2 = set()
+    notes_2 = set()
+
+    # Extract clipped notes from beginning of second file
+    t = 0
+    for idx, msg in enumerate(mid2):
+        t += msg.time
+        if t > START_END_THRESHOLD:
+            break
+
+        if msg.type == 'note_on' and msg.velocity != 0:
+            notes_2.add(msg.note)
+            idxs_2.add(idx)
+
+    # Extract clipped notes from end of first file
+    msgs = list(mid1)[::-1]
+    t = 0
+    for idx, msg in enumerate(msgs[1:], start=1):
+        prev_msg = msgs[idx - 1]
+        t += prev_msg.time
+
+        if t > START_END_THRESHOLD:
+            break
+
+        if msg.type == 'note_on' and msg.velocity == 0:
+            front_idx = len(msgs) - 1 - idx
+            idxs_1.add(front_idx)
+            notes_1.add(msg.note)
+    
+    for idx, msg in enumerate(mid1.tracks[0]):
+        excluded_note = idx in idxs_1 and msg.note in notes_2
+        if msg.type == 'end_of_track' or excluded_note:
+            continue
+        new_msg = msg.copy()
+        track.append(new_msg)
+
+    lost_time = 0
+    for idx, msg in enumerate(mid2.tracks[0]):
+        excluded_note = idx in idxs_2 and msg.note in notes_1
+        if msg.is_meta or excluded_note:
+            lost_time += msg.time
+            continue
+        new_msg = msg.copy()
+        if lost_time > 0:
+            new_msg.time += lost_time
+            lost_time = 0
+        track.append(new_msg)
+
+    output_mid.save(output_filename)
+
+def extract_midi(input_data, temp_dir='./temps'):
+        temp_id = generate_id()
+        wav_filename = f'{temp_dir}/{temp_id}.wav'
+        mid_filename = f'{temp_dir}/{temp_id}.mid'
+
+        save_frames_to_file(frame_data=input_data, filename=wav_filename)
+        convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
+
+        serialized_msgs, tpb = serialize_midi_file(midi_filename=mid_filename)
+        midi_info = {
+            'ticks_per_beat': tpb,
+            'messages': serialized_msgs
+        }
+
+        for filename in (wav_filename, mid_filename):
+            try:
+                os.remove(filename)
+            except FileNotFoundError:
+                print(f'{filename} already deleted')
+
+        return midi_info
+
+def serialize_midi_file(midi_filename):
+    mid = mido.MidiFile(midi_filename)
+    if len(mid.tracks) > 1:
+        mid.tracks = [mido.merge_tracks(mid.tracks)]
+
+    msgs = []
+    for msg in mid.tracks[0]:
+        serialized = msg.dict() if msg.is_meta else str(msg)
+        msgs.append(serialized)
+    tpb = mid.ticks_per_beat
+    return msgs, tpb
+
+def deserialize_midi_file(msgs, ticks_per_beat, out_filename):
+    track = mido.MidiTrack()
+    mid = mido.MidiFile(ticks_per_beat=ticks_per_beat, tracks=[track])
+
+    for serialized_msg in msgs:
+        is_meta = isinstance(serialized_msg, dict)
+        if is_meta:
+            msg = mido.MetaMessage(**serialized_msg)
+        else:
+            msg = mido.Message.from_str(serialized_msg)
+        track.append(msg)
+    mid.save(out_filename)
+
+if __name__ == '__main__':
+    pass
+
+    # mf1 = '../misc/output/scalesA.mid'
+
+    # s, tpb = serialize_midi_file(midi_filename=mf1)
+    # # print(s)
+    # deserialize_midi_file(msgs=s, ticks_per_beat=tpb, out_filename='./yeet.mid')
+    # display_midi('./yeet.mid')
