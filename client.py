@@ -23,6 +23,7 @@ class OctavioClient:
     
     def __init__(self):
         self.session = utils.generate_id()
+        self.chunks_sent = 0
 
     def identify_recording_device(self):
         print("----------------------Recording device list---------------------")
@@ -42,7 +43,8 @@ class OctavioClient:
             midi_info = utils.extract_midi(input_data=input_data)
             request_data = {
                 'instrument_id': infra.INSTRUMENT_ID,
-                'session': self.session,
+                'session_id': self.session,
+                'chunk': self.chunks_sent,
                 **midi_info
             }
             headers = {
@@ -53,6 +55,7 @@ class OctavioClient:
                 json=request_data,
                 headers=headers
             )
+            self.chunks_sent += 1
 
             # current_ts = formatdate(timeval=time.time()-chunk_secs, localtime=False, usegmt=True)
             # headers = {
