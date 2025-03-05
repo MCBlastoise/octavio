@@ -13,14 +13,8 @@ def hello_world():
 
 @app.route("/piano", methods=['POST'])
 def add_piano_music():
-    global file_counter
-
-    output_prefix = 'test_out'
-    
-    reconstructed_arr = np.frombuffer(request.data, dtype=np.float32)
-    filename = f'{output_prefix}{file_counter}.wav'
-    save_frames_to_file(frame_data=reconstructed_arr, filename=filename)
-    file_counter += 1
+    print(request.json)
+    return 'Done'
 
 @app.route("/keyboard", methods=['POST'])
 def add_keyboard_music():
