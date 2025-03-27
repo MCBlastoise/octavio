@@ -115,10 +115,13 @@ def extract_midi(input_data, temp_dir='./temps'):
         save_frames_to_file(frame_data=input_data, filename=wav_filename)
         convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
 
+        empty = midi_is_empty(midi_filename=mid_filename)
+
         serialized_msgs, tpb = serialize_midi_file(midi_filename=mid_filename)
         midi_info = {
             'ticks_per_beat': tpb,
-            'messages': serialized_msgs
+            'messages': serialized_msgs,
+            'is_empty': empty
         }
 
         for filename in (wav_filename, mid_filename):
@@ -153,6 +156,13 @@ def deserialize_midi_file(msgs, ticks_per_beat, out_filename):
             msg = mido.Message.from_str(serialized_msg)
         track.append(msg)
     mid.save(out_filename)
+
+def midi_is_empty(midi_filename):
+    mid = mido.MidiFile(midi_filename)
+    for msg in mid:
+        if msg.type == 'note_on':
+            return False
+    return True
 
 if __name__ == '__main__':
     pass

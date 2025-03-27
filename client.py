@@ -14,6 +14,7 @@ class OctavioClient:
     num_channels = 1
     sampling_rate = 22050
     chunk_secs = 5
+    silence_threshold = 10
 
     server_url = 'http://127.0.0.1:5000'
     endpoint_url = '/piano'
@@ -24,6 +25,16 @@ class OctavioClient:
     def __init__(self):
         self.session = utils.generate_id()
         self.chunks_sent = 0
+        self.silence = 0
+
+    def create_new_session(self):
+        self.session = utils.generate_id()
+        self.chunks_sent = 0
+        self.silence = 0
+
+    def update_session(self):
+        if self.silence >= self.silence_threshold and self.chunks_sent > 0:
+            self.create_new_session()
 
     def identify_recording_device(self):
         print("----------------------Recording device list---------------------")
@@ -41,6 +52,13 @@ class OctavioClient:
     def record_audio(self):
         def mic_callback(input_data, frame_count, time_info, flags):
             midi_info = utils.extract_midi(input_data=input_data)
+            if midi_info['is_empty']:
+                print("EMPTY FOUND")
+                self.silence += self.chunk_secs
+                return None, pyaudio.paContinue
+            else:
+                self.silence = 0
+
             request_data = {
                 'instrument_id': infra.INSTRUMENT_ID,
                 'session_id': self.session,
@@ -84,6 +102,8 @@ class OctavioClient:
 
         while stream.is_active():
             pass
+            
+            # self.update_session()
 
 if __name__ == '__main__':
     client = OctavioClient()
