@@ -3,8 +3,6 @@ import math
 import time
 import requests
 import numpy as np
-# import random
-# from email.utils import formatdate
 import os
 import utils
 import infra
@@ -75,16 +73,6 @@ class OctavioClient:
             )
             self.chunks_sent += 1
 
-            # current_ts = formatdate(timeval=time.time()-chunk_secs, localtime=False, usegmt=True)
-            # headers = {
-            #     'Content-Type': 'application/octet-stream',
-            #     'Date': current_ts
-            # }
-            # r = requests.post(
-            #     request_url,
-            #     data=input_data,
-            #     headers=headers
-            # )
             return None, pyaudio.paContinue
         
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
