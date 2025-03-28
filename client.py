@@ -6,6 +6,7 @@ import numpy as np
 import os
 import utils
 import infra
+from hardware import OctavioHardware
 
 class OctavioClient:
     format = pyaudio.paInt16
@@ -14,16 +15,30 @@ class OctavioClient:
     chunk_secs = 5
     silence_threshold = 10
 
-    server_url = 'http://127.0.0.1:5000'
+    temp_dir = './temps'
+
+    server_url = 'http://127.0.0.1:5001'
     endpoint_url = '/piano'
     request_url = f'{server_url}{endpoint_url}'
 
     audio = pyaudio.PyAudio()
     
     def __init__(self):
+        self.hardware = OctavioHardware()
+        self.is_recording = True
+        
         self.session = utils.generate_id()
         self.chunks_sent = 0
         self.silence = 0
+
+        os.makedirs(self.temp_dir, exist_ok=True)
+
+    def refresh_client_state(self):
+        self.update_session()
+
+        if self.hardware.button_pressed:
+            self.is_recording = False
+        self.hardware.shine_green() if self.is_recording else self.hardware.shine_red()
 
     def create_new_session(self):
         self.session = utils.generate_id()
@@ -89,9 +104,7 @@ class OctavioClient:
         print ("Recording started")
 
         while stream.is_active():
-            pass
-            
-            # self.update_session()
+            self.refresh_client_state()
 
 if __name__ == '__main__':
     client = OctavioClient()
