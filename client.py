@@ -1,3 +1,4 @@
+import RPi.GPIO as GPIO
 import pyaudio
 import math
 import time
@@ -117,5 +118,8 @@ class OctavioClient:
             self.refresh_client_state()
 
 if __name__ == '__main__':
-    client = OctavioClient()
-    client.record_audio()
+    try:
+        client = OctavioClient()
+        client.record_audio()
+    except KeyboardInterrupt:
+        GPIO.cleanup()
