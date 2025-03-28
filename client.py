@@ -15,6 +15,8 @@ class OctavioClient:
     chunk_secs = 5
     silence_threshold = 10
 
+    privacy_minutes = 30
+
     temp_dir = './temps'
 
     server_url = 'http://127.0.0.1:5001'
@@ -25,6 +27,7 @@ class OctavioClient:
     
     def __init__(self):
         self.hardware = OctavioHardware()
+        self.privacy_last_requested = None
         self.is_recording = True
         
         self.session = utils.generate_id()
@@ -36,8 +39,15 @@ class OctavioClient:
     def refresh_client_state(self):
         self.update_session()
 
+        current_time = time.time()
         if self.hardware.button_pressed:
-            self.is_recording = False
+            self.privacy_last_requested = current_time
+            self.create_new_session()
+        
+        self.is_recording = (
+            self.privacy_last_requested is None or
+            (current_time - self.privacy_last_requested) / 60 >= self.privacy_minutes
+        )
         self.hardware.shine_green() if self.is_recording else self.hardware.shine_red()
 
     def create_new_session(self):
