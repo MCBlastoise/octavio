@@ -84,7 +84,7 @@ class OctavioClient:
 
     def record_audio(self):
         def mic_callback(input_data, frame_count, time_info, flags):
-            midi_info = utils.extract_midi(input_data=input_data)
+            midi_info = utils.extract_midi(input_data=input_data, bp_model=self.bp_model, temp_dir=self.temp_dir)
             if midi_info['is_empty']:
                 print("EMPTY FOUND")
                 self.silence += self.chunk_secs
