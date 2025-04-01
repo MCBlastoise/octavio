@@ -15,14 +15,15 @@ class OctavioClient:
     format = pyaudio.paInt16
     num_channels = 1
     sampling_rate = 22050
-    chunk_secs = 5
+    chunk_secs = 30
     silence_threshold = 10
 
     privacy_minutes = 30
 
     temp_dir = './temps'
 
-    server_url = 'http://127.0.0.1:5001'
+    # server_url = 'http://127.0.0.1:5001'
+    server_url = 'https://octavio-server.mit.edu:5001'
     endpoint_url = '/piano'
     request_url = f'{server_url}{endpoint_url}'
 
