@@ -30,12 +30,22 @@ class OctavioClient:
         self.hardware = OctavioHardware()
         self.privacy_last_requested = None
         self.is_recording = True
+        self.stream = None
         
         self.session = utils.generate_id()
         self.chunks_sent = 0
         self.silence = 0
 
         os.makedirs(self.temp_dir, exist_ok=True)
+
+    def create_new_session(self):
+        self.session = utils.generate_id()
+        self.chunks_sent = 0
+        self.silence = 0
+
+    def update_session(self):
+        if self.silence >= self.silence_threshold and self.chunks_sent > 0:
+            self.create_new_session()
 
     def refresh_client_state(self):
         self.update_session()
@@ -50,15 +60,6 @@ class OctavioClient:
             (current_time - self.privacy_last_requested) / 60 >= self.privacy_minutes
         )
         self.hardware.shine_green() if self.is_recording else self.hardware.shine_red()
-
-    def create_new_session(self):
-        self.session = utils.generate_id()
-        self.chunks_sent = 0
-        self.silence = 0
-
-    def update_session(self):
-        if self.silence >= self.silence_threshold and self.chunks_sent > 0:
-            self.create_new_session()
 
     def identify_recording_device(self):
         print("----------------------Recording device list---------------------")
@@ -112,14 +113,20 @@ class OctavioClient:
                             frames_per_buffer=chunk_frames,
                             stream_callback=mic_callback
         )
-        print ("Recording started")
-
-        while stream.is_active():
+        return stream
+    
+    def run(self):
+        while True:
             self.refresh_client_state()
+            if self.stream is None and self.is_recording:
+                self.stream = self.record_audio()
+            elif self.stream is not None and not self.is_recording:
+                self.stream.close()
+                self.stream = None
 
 if __name__ == '__main__':
     try:
         client = OctavioClient()
-        client.record_audio()
+        client.run()
     except KeyboardInterrupt:
         GPIO.cleanup()
