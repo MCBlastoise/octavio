@@ -50,8 +50,8 @@ def convert_to_midi_bp(input_audio, output_dir, bp_model):
         save_notes=False,
         model_or_model_path=bp_model,
     )
-    bp_out_path = f'{str(Path(input_audio).with_suffix(''))}_basic_pitch.mid'
-    target_path = f'{str(Path(input_audio).with_suffix(''))}.mid'
+    bp_out_path = f'{str(Path(input_audio).with_suffix(""))}_basic_pitch.mid'
+    target_path = f'{str(Path(input_audio).with_suffix(""))}.mid'
     os.rename(bp_out_path, target_path)
     return target_path
 
