@@ -8,6 +8,8 @@ import os
 import utils
 import infra
 from hardware import OctavioHardware
+from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
+from basic_pitch.inference import predict_and_save, Model
 
 class OctavioClient:
     format = pyaudio.paInt16
@@ -25,6 +27,9 @@ class OctavioClient:
     request_url = f'{server_url}{endpoint_url}'
 
     audio = pyaudio.PyAudio()
+
+    _tflite_path = build_icassp_2022_model_path(FilenameSuffix.tflite)
+    bp_model = Model(_tflite_path)
     
     def __init__(self):
         self.hardware = OctavioHardware()

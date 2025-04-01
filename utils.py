@@ -7,6 +7,8 @@ import subprocess
 import mido
 import random
 import os
+from pathlib import Path
+from basic_pitch.inference import predict_and_save
 
 def generate_id():
     return ''.join([str(random.randint(0, 9)) for _ in range(8)])
@@ -29,13 +31,29 @@ def save_frames_to_file(frame_data, filename):
     waveFile.writeframes(bytes(frame_data))
     waveFile.close()
 
-def convert_to_midi(input_audio, output_filename, ignore_warnings=True):
-    command = f'transkun {input_audio} {output_filename}'
-    command_args = shlex.split(command)
-    if ignore_warnings:
-        subprocess.run(command_args, stderr=subprocess.DEVNULL)
-    else:
-        subprocess.run(command_args)
+# def convert_to_midi(input_audio, output_filename, ignore_warnings=True):
+#     command = f'transkun {input_audio} {output_filename}'
+#     command_args = shlex.split(command)
+#     if ignore_warnings:
+#         subprocess.run(command_args, stderr=subprocess.DEVNULL)
+#     else:
+#         subprocess.run(command_args)
+
+def convert_to_midi_bp(input_audio, output_dir, bp_model):
+    audio_files = [input_audio]
+    predict_and_save(
+        audio_path_list=audio_files,
+        output_directory=output_dir,
+        save_midi=True,
+        sonify_midi=False,
+        save_model_outputs=False,
+        save_notes=False,
+        model_or_model_path=bp_model,
+    )
+    bp_out_path = f'{str(Path(input_audio).with_suffix(''))}_basic_pitch.mid'
+    target_path = f'{str(Path(input_audio).with_suffix(''))}.mid'
+    os.rename(bp_out_path, target_path)
+    return target_path
 
 def display_midi(midi_filename):
     mid = mido.MidiFile(midi_filename)
@@ -107,13 +125,14 @@ def combine_midi(midi_filename1, midi_filename2, output_filename):
 
     output_mid.save(output_filename)
 
-def extract_midi(input_data, temp_dir='./temps'):
+def extract_midi(input_data, bp_model, temp_dir='./temps'):
         temp_id = generate_id()
         wav_filename = f'{temp_dir}/{temp_id}.wav'
         mid_filename = f'{temp_dir}/{temp_id}.mid'
 
         save_frames_to_file(frame_data=input_data, filename=wav_filename)
-        convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
+        # convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
+        convert_to_midi_bp(input_audio=input_data, output_dir=temp_dir, bp_model=bp_model)
 
         empty = midi_is_empty(midi_filename=mid_filename)
 
