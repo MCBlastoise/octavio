@@ -38,6 +38,8 @@ class OctavioClient:
 
         os.makedirs(self.temp_dir, exist_ok=True)
 
+        self.device_index = self.identify_recording_device()
+
     def create_new_session(self):
         self.session = utils.generate_id()
         self.chunks_sent = 0
@@ -103,10 +105,9 @@ class OctavioClient:
             return None, pyaudio.paContinue
         
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
-        device_index = self.identify_recording_device()
         stream = self.audio.open(
                             input=True,
-                            input_device_index=device_index,
+                            input_device_index=self.device_index,
                             format=self.format,
                             channels=self.num_channels,
                             rate=self.sampling_rate,
