@@ -5,6 +5,8 @@ class OctavioHardware:
         self.red_pin = red_pin
         self.green_pin = green_pin
         self.button_pin = button_pin
+
+        GPIO.cleanup()
         
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(red_pin, GPIO.OUT)
