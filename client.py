@@ -24,7 +24,7 @@ class OctavioClient:
     temp_dir = './temps'
 
     # server_url = 'http://127.0.0.1:5001'
-    server_url = 'https://octavio-server.mit.edu:5001'
+    server_url = 'http://octavio-server.mit.edu:5001'
     endpoint_url = '/piano'
     request_url = f'{server_url}{endpoint_url}'
 
@@ -46,7 +46,7 @@ class OctavioClient:
         if os.path.isdir(self.temp_dir):
             shutil.rmtree(self.temp_dir)
         os.makedirs(self.temp_dir, exist_ok=True)
-        
+
         warmup_frames = np.zeros(self.sampling_rate)
         warmup_filename = f'{self.temp_dir}/warmup.wav'
         utils.save_frames_to_file(warmup_frames, warmup_filename)

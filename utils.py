@@ -7,6 +7,7 @@ import subprocess
 import mido
 import random
 import os
+import shutil
 from pathlib import Path
 from basic_pitch.inference import predict_and_save
 
@@ -51,9 +52,9 @@ def convert_to_midi_bp(input_audio, output_dir, bp_model):
         model_or_model_path=bp_model,
     )
     bp_out_path = f'{str(Path(input_audio).with_suffix(""))}_basic_pitch.mid'
-    target_path = f'{str(Path(input_audio).with_suffix(""))}.mid'
-    os.rename(bp_out_path, target_path)
-    return target_path
+    # target_path = f'{str(Path(input_audio).with_suffix(""))}.mid'
+    # os.rename(bp_out_path, target_path)
+    return bp_out_path
 
 def display_midi(midi_filename):
     mid = mido.MidiFile(midi_filename)
@@ -127,12 +128,20 @@ def combine_midi(midi_filename1, midi_filename2, output_filename):
 
 def extract_midi(input_data, bp_model, temp_dir='./temps'):
         temp_id = generate_id()
-        wav_filename = f'{temp_dir}/{temp_id}.wav'
-        mid_filename = f'{temp_dir}/{temp_id}.mid'
+        unique_temp_dir = f'{temp_dir}/{temp_id}'
+        os.makedirs(unique_temp_dir, exist_ok=True)
+
+        wav_filename = f'{unique_temp_dir}/{temp_id}.wav'
+        # mid_filename = f'{unique_temp_dir}/{temp_id}.mid'
 
         save_frames_to_file(frame_data=input_data, filename=wav_filename)
+
+        print("Frames saved to file")
+
         # convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
-        convert_to_midi_bp(input_audio=input_data, output_dir=temp_dir, bp_model=bp_model)
+        mid_filename = convert_to_midi_bp(input_audio=wav_filename, output_dir=unique_temp_dir, bp_model=bp_model)
+
+        print("Converted to MIDI")
 
         empty = midi_is_empty(midi_filename=mid_filename)
 
@@ -143,11 +152,16 @@ def extract_midi(input_data, bp_model, temp_dir='./temps'):
             'is_empty': empty
         }
 
-        for filename in (wav_filename, mid_filename):
-            try:
-                os.remove(filename)
-            except FileNotFoundError:
-                print(f'{filename} already deleted')
+        try:
+            shutil.rmtree(unique_temp_dir)
+        except FileNotFoundError:
+            print(f'{unique_temp_dir} already deleted')
+
+        # for filename in (wav_filename, mid_filename):
+        #     try:
+        #         os.remove(filename)
+        #     except FileNotFoundError:
+        #         print(f'{filename} already deleted')
 
         return midi_info
 
