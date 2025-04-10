@@ -34,7 +34,6 @@ class OctavioClient:
     bp_model = Model(_tflite_path)
     
     def __init__(self):
-        self.hardware = OctavioHardware()
         self.privacy_last_requested = None
         self.is_recording = True
         self.stream = None
@@ -50,8 +49,12 @@ class OctavioClient:
         warmup_frames = np.zeros(self.sampling_rate)
         warmup_filename = f'{self.temp_dir}/warmup.wav'
         utils.save_frames_to_file(warmup_frames, warmup_filename)
+        warmup_midi = utils.convert_to_midi_bp(input_audio=warmup_filename, output_dir=self.temp_dir, bp_model=self.bp_model)
+        os.remove(warmup_midi)
 
         self.device_index = self.identify_recording_device()
+
+        self.hardware = OctavioHardware()
 
     def create_new_session(self):
         self.session = utils.generate_id()
