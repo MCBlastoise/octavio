@@ -5,6 +5,7 @@ import time
 import requests
 import numpy as np
 import os
+import shutil
 import utils
 import infra
 from hardware import OctavioHardware
@@ -42,7 +43,13 @@ class OctavioClient:
         self.chunks_sent = 0
         self.silence = 0
 
+        if os.path.isdir(self.temp_dir):
+            shutil.rmtree(self.temp_dir)
         os.makedirs(self.temp_dir, exist_ok=True)
+        
+        warmup_frames = np.zeros(self.sampling_rate)
+        warmup_filename = f'{self.temp_dir}/warmup.wav'
+        utils.save_frames_to_file(warmup_frames, warmup_filename)
 
         self.device_index = self.identify_recording_device()
 
