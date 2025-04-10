@@ -52,7 +52,10 @@ class OctavioClient:
         warmup_midi = utils.convert_to_midi_bp(input_audio=warmup_filename, output_dir=self.temp_dir, bp_model=self.bp_model)
         os.remove(warmup_midi)
 
-        self.device_index = self.identify_recording_device()
+        try:
+            self.device_index = infra.RECORDING_DEVICE_INDEX
+        except NameError:
+            self.device_index = self.identify_recording_device()
 
         self.hardware = OctavioHardware()
 
