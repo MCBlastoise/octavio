@@ -6,6 +6,10 @@ import utils
 import datetime
 import os
 import pathlib
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 file_counter = 0
@@ -24,20 +28,25 @@ def add_piano_music():
     messages = j['messages']
     ticks_per_beat = j['ticks_per_beat']
 
+    logger.info(f"MIDI receieved from piano {iid} in session {session_id}")
+
     session_dir = f'./data/instr_{iid}/session_{session_id}'
     session_exists = os.path.isdir(session_dir)
     os.makedirs(session_dir, exist_ok=True)
 
     if not session_exists:
+        logger.info(f"Session not found, starting one")
+
         current_date = str(datetime.date.today())
         date_filename = f'{session_dir}/{current_date}.txt'
         pathlib.Path(date_filename).touch()
 
         midi_filename = f'{session_dir}/running_0.mid'
         utils.deserialize_midi_file(msgs=messages, ticks_per_beat=ticks_per_beat, out_filename=midi_filename)
+        logger.info(f"Added starting MIDI to new session")
 
         return 'Success'
-    
+
     files = os.listdir(session_dir)
     running_mid_filename = next( (file for file in files if file.startswith('running') and file.endswith('.mid')), None )
 
@@ -56,6 +65,8 @@ def add_piano_music():
             os.remove(filename)
         except FileNotFoundError:
             print(f'{filename} already deleted')
+
+    logger.info(f"Successfully added chunk {chunk} to piano {iid}'s existing session {session_id}")
 
     utils.display_midi(out_filename)
     return 'Success'

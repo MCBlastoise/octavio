@@ -1,3 +1,4 @@
+import logging
 import RPi.GPIO as GPIO
 import pyaudio
 import math
@@ -11,6 +12,9 @@ import infra
 from hardware import OctavioHardware
 from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
 from basic_pitch.inference import predict_and_save, Model
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 class OctavioClient:
     format = pyaudio.paInt16
@@ -32,12 +36,12 @@ class OctavioClient:
 
     _tflite_path = build_icassp_2022_model_path(FilenameSuffix.tflite)
     bp_model = Model(_tflite_path)
-    
+
     def __init__(self):
         self.privacy_last_requested = None
         self.is_recording = True
         self.stream = None
-        
+
         self.session = utils.generate_id()
         self.chunks_sent = 0
         self.silence = 0
@@ -46,11 +50,15 @@ class OctavioClient:
             shutil.rmtree(self.temp_dir)
         os.makedirs(self.temp_dir, exist_ok=True)
 
+        logger.info("AMT model attempting to warm up")
+
         warmup_frames = np.zeros(self.sampling_rate)
         warmup_filename = f'{self.temp_dir}/warmup.wav'
         utils.save_frames_to_file(warmup_frames, warmup_filename)
         warmup_midi = utils.convert_to_midi_bp(input_audio=warmup_filename, output_dir=self.temp_dir, bp_model=self.bp_model)
         os.remove(warmup_midi)
+
+        logger.info("AMT model successfully warmed up")
 
         try:
             self.device_index = infra.RECORDING_DEVICE_INDEX
@@ -58,6 +66,8 @@ class OctavioClient:
             self.device_index = self.identify_recording_device()
 
         self.hardware = OctavioHardware()
+
+        logger.info("System initialized successfully")
 
     def create_new_session(self):
         self.session = utils.generate_id()
@@ -73,9 +83,10 @@ class OctavioClient:
 
         current_time = time.time()
         if self.hardware.button_pressed:
+            logger.info("User requested privacy")
             self.privacy_last_requested = current_time
             self.create_new_session()
-        
+
         self.is_recording = (
             self.privacy_last_requested is None or
             (current_time - self.privacy_last_requested) / 60 >= self.privacy_minutes
@@ -97,9 +108,12 @@ class OctavioClient:
 
     def record_audio(self):
         def mic_callback(input_data, frame_count, time_info, flags):
+            logger.info("Attempting to extract MIDI")
             midi_info = utils.extract_midi(input_data=input_data, bp_model=self.bp_model, temp_dir=self.temp_dir)
+            logger.info("MIDI extracted")
+
             if midi_info['is_empty']:
-                print("EMPTY FOUND")
+                logger.info("MIDI was empty, nothing sent")
                 self.silence += self.chunk_secs
                 return None, pyaudio.paContinue
             else:
@@ -114,15 +128,18 @@ class OctavioClient:
             headers = {
                 'Content-Type': 'application/json'
             }
+
+            logger.info("Attempting to transmit MIDI")
             r = requests.post(
                 self.request_url,
                 json=request_data,
                 headers=headers
             )
+            logger.info("MIDI transmitted successfully")
             self.chunks_sent += 1
 
             return None, pyaudio.paContinue
-        
+
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
         stream = self.audio.open(
                             input=True,
@@ -134,13 +151,15 @@ class OctavioClient:
                             stream_callback=mic_callback
         )
         return stream
-    
+
     def run(self):
         while True:
             self.refresh_client_state()
             if self.stream is None and self.is_recording:
+                logger.info("System starting a new audio stream")
                 self.stream = self.record_audio()
             elif self.stream is not None and not self.is_recording:
+                logger.info("System closing audio stream")
                 self.stream.close()
                 self.stream = None
 
