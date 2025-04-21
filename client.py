@@ -13,8 +13,8 @@ from hardware import OctavioHardware
 from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
 from basic_pitch.inference import predict_and_save, Model
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class OctavioClient:
     format = pyaudio.paInt16

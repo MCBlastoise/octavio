@@ -8,8 +8,8 @@ import os
 import pathlib
 import logging
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 file_counter = 0
