@@ -96,7 +96,6 @@ class OctavioClient:
 
         current_time = time.time()
         if self.hardware.button_pressed:
-            logger.info("User requested privacy")
             self.privacy_last_requested = current_time
             self.create_new_session()
 
@@ -172,6 +171,7 @@ class OctavioClient:
                 logger.info("System starting a new audio stream")
                 self.stream = self.record_audio()
             elif self.stream is not None and not self.is_recording:
+                logger.info("User requested privacy")
                 logger.info("System closing audio stream")
                 self.stream.close()
                 self.stream = None
