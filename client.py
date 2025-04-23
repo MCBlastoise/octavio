@@ -16,53 +16,17 @@ with log_utils.no_stderr():
     from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
     from basic_pitch.inference import predict_and_save, Model
 
-# Logging setup
-# root = logging.getLogger()
-# for handler in root.handlers[:]:
-#     root.removeHandler(handler)
-# root.setLevel(logging.CRITICAL)
-
-# logging.basicConfig(
-#     level=logging.DEBUG,
-#     format="%(asctime)s [%(levelname)s] %(message)s"
-# )
-# logger = logging.getLogger(__name__)
-
-# logging.getLogger("root").propagate = False
-# logging.getLogger("__main__").propagate = False
-
-
-
-
 root = logging.getLogger()
 for handler in root.handlers[:]:
     root.removeHandler(handler)
-root.setLevel(logging.CRITICAL)  # silence others by default
-root.propagate = False
+root.setLevel(logging.CRITICAL)
 
-
-
-# APP_LOGGER = "octavio"
-# for name, logger in logging.root.manager.loggerDict.items():
-#     if isinstance(logger, logging.Logger) and not name.startswith(APP_LOGGER):
-#         logger.setLevel(logging.ERROR)
-#         logger.propagate = False
-#         for h in logger.handlers[:]:
-#             logger.removeHandler(h)
-
-
-# Setup your app's logger
 logger = logging.getLogger("octavio")
 logger.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler(sys.stderr)
 handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
 logger.addHandler(handler)
-
-# for name in logging.root.manager.loggerDict:
-#     print(name)
-
-#     APP_LOGGER = "octavio"
 
 class OctavioClient:
     format = pyaudio.paInt16

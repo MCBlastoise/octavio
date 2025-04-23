@@ -2,7 +2,6 @@ from contextlib import contextmanager
 import sys
 import os
 
-# Suppress stderr temporarily
 def suppress_import_stderr():
     devnull = os.open(os.devnull, os.O_WRONLY)
     original_stderr_fd = sys.stderr.fileno()

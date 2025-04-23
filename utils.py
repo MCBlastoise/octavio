@@ -199,19 +199,6 @@ def midi_is_empty(midi_filename):
             return False
     return True
 
-
-# import os
-
-
-# 🔇 Silence stderr only during PyAudio import
-# stderr_fd = suppress_import_stderr()
-# import pyaudio
-# restore_import_stderr(stderr_fd)
-
-# ✅ After this, use pyaudio as usual
-
-
-
 if __name__ == '__main__':
     pass
 
