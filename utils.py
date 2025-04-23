@@ -1,3 +1,4 @@
+import log_utils
 import numpy as np
 import pyaudio
 import wave
@@ -6,10 +7,11 @@ import shlex
 import subprocess
 import mido
 import random
-import os
 import shutil
 from pathlib import Path
-from basic_pitch.inference import predict_and_save
+import os
+with log_utils.no_stderr():
+    from basic_pitch.inference import predict_and_save
 
 def generate_id():
     return ''.join([str(random.randint(0, 9)) for _ in range(8)])
@@ -63,7 +65,7 @@ def display_midi(midi_filename):
 
 def combine_midi(midi_filename1, midi_filename2, output_filename):
     START_END_THRESHOLD = 0.25
-    
+
     mid1 = mido.MidiFile(midi_filename1)
     mid1.tracks = [mido.merge_tracks(mid1.tracks)]
 
@@ -104,7 +106,7 @@ def combine_midi(midi_filename1, midi_filename2, output_filename):
             front_idx = len(msgs) - 1 - idx
             idxs_1.add(front_idx)
             notes_1.add(msg.note)
-    
+
     for idx, msg in enumerate(mid1.tracks[0]):
         excluded_note = idx in idxs_1 and msg.note in notes_2
         if msg.type == 'end_of_track' or excluded_note:
@@ -196,6 +198,19 @@ def midi_is_empty(midi_filename):
         if msg.type == 'note_on':
             return False
     return True
+
+
+# import os
+
+
+# 🔇 Silence stderr only during PyAudio import
+# stderr_fd = suppress_import_stderr()
+# import pyaudio
+# restore_import_stderr(stderr_fd)
+
+# ✅ After this, use pyaudio as usual
+
+
 
 if __name__ == '__main__':
     pass

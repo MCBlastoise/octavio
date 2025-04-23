@@ -1,4 +1,6 @@
+import log_utils
 import logging
+import sys
 import RPi.GPIO as GPIO
 import pyaudio
 import math
@@ -7,14 +9,60 @@ import requests
 import numpy as np
 import os
 import shutil
-import utils
 import infra
 from hardware import OctavioHardware
-from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
-from basic_pitch.inference import predict_and_save, Model
+import utils
+with log_utils.no_stderr():
+    from basic_pitch import build_icassp_2022_model_path, FilenameSuffix
+    from basic_pitch.inference import predict_and_save, Model
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+# Logging setup
+# root = logging.getLogger()
+# for handler in root.handlers[:]:
+#     root.removeHandler(handler)
+# root.setLevel(logging.CRITICAL)
+
+# logging.basicConfig(
+#     level=logging.DEBUG,
+#     format="%(asctime)s [%(levelname)s] %(message)s"
+# )
+# logger = logging.getLogger(__name__)
+
+# logging.getLogger("root").propagate = False
+# logging.getLogger("__main__").propagate = False
+
+
+
+
+root = logging.getLogger()
+for handler in root.handlers[:]:
+    root.removeHandler(handler)
+root.setLevel(logging.CRITICAL)  # silence others by default
+root.propagate = False
+
+
+
+# APP_LOGGER = "octavio"
+# for name, logger in logging.root.manager.loggerDict.items():
+#     if isinstance(logger, logging.Logger) and not name.startswith(APP_LOGGER):
+#         logger.setLevel(logging.ERROR)
+#         logger.propagate = False
+#         for h in logger.handlers[:]:
+#             logger.removeHandler(h)
+
+
+# Setup your app's logger
+logger = logging.getLogger("octavio")
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler(sys.stderr)
+handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(handler)
+
+# for name in logging.root.manager.loggerDict:
+#     print(name)
+
+#     APP_LOGGER = "octavio"
 
 class OctavioClient:
     format = pyaudio.paInt16
@@ -32,7 +80,8 @@ class OctavioClient:
     endpoint_url = '/piano'
     request_url = f'{server_url}{endpoint_url}'
 
-    audio = pyaudio.PyAudio()
+    with log_utils.no_stderr():
+        audio = pyaudio.PyAudio()
 
     _tflite_path = build_icassp_2022_model_path(FilenameSuffix.tflite)
     bp_model = Model(_tflite_path)
@@ -164,6 +213,8 @@ class OctavioClient:
                 self.stream = None
 
 if __name__ == '__main__':
+    ...
+
     try:
         client = OctavioClient()
         client.run()
