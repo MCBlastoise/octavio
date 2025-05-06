@@ -52,6 +52,12 @@ def convert_to_midi_bp(input_audio, output_dir, bp_model):
         save_model_outputs=False,
         save_notes=False,
         model_or_model_path=bp_model,
+
+        minimum_frequency=27.5,
+        maximum_frequency=4186,
+
+        onset_threshold=0.7,
+        frame_threshold=0.5
     )
     bp_out_path = f'{str(Path(input_audio).with_suffix(""))}_basic_pitch.mid'
     # target_path = f'{str(Path(input_audio).with_suffix(""))}.mid'
