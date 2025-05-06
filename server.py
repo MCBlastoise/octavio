@@ -6,10 +6,20 @@ import utils
 import datetime
 import os
 import pathlib
+import sys
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+root = logging.getLogger()
+for handler in root.handlers[:]:
+    root.removeHandler(handler)
+root.setLevel(logging.CRITICAL)
+
+logger = logging.getLogger("octavio")
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler(sys.stderr)
+handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(handler)
 
 app = Flask(__name__)
 file_counter = 0
