@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+# Setting up useful variables
+
+SERVER_USERNAME="ayyub"
+SERVER_HOSTNAME="octavio-server.mit.edu"
+
+# Do separate installs (e.g. audio stuff) necessary
+
+echo "Installing necessary packages"
+sudo apt install autossh
+# exit
+
 # Establish device information
 
 echo "What is the unique device number?"
@@ -68,15 +79,14 @@ fi
 
 echo
 
-# Generate SSH keys on Pi
+# Generate SSH keys on Pi and exchange with server
 
-# Key-exchange with server
+ssh-keygen -t ed25519 -C "\"Raspberry Pi $DEVICE_NUM\""
+ssh-copy-id -i ~/.ssh/id_ed25519.pub $SERVER_USERNAME@$SERVER_HOSTNAME
 
 # Setup tunnel-to-lab systemd service
 
 # Make and populate venv environment
-
-# Do separate installs (e.g. audio stuff) necessary
 
 # Construct project-specific files
 
