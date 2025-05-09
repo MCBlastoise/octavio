@@ -1,0 +1,18 @@
+[Unit]
+Description=AutoSSH Reverse Tunnel to Lab Server
+After=network.target
+
+[Service]
+User=${CLIENT_USERNAME}
+Environment="AUTOSSH_GATETIME=0"
+ExecStartPre=/bin/bash -c "ps aux | grep '[s]sh.*-R' | awk '{print $2}' | xargs -r kill -9"
+ExecStart=/usr/bin/autossh -M 0 -N \
+  -o "ServerAliveInterval=60" \
+  -o "ServerAliveCountMax=3" \
+  -o "ExitOnForwardFailure=yes" \
+  -R ${TUNNEL_PORT}:localhost:22 ${SERVER_USERNAME}@${SERVER_HOSTNAME}
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
