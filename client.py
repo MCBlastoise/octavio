@@ -1,7 +1,7 @@
 import log_utils
 import logging
 import sys
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import pyaudio
 import math
 import time
@@ -183,8 +183,11 @@ class OctavioClient:
 if __name__ == '__main__':
     ...
 
-    try:
-        client = OctavioClient()
-        client.run()
-    except KeyboardInterrupt:
-        GPIO.cleanup()
+    client = OctavioClient()
+    client.run()
+
+    # try:
+    #     client = OctavioClient()
+    #     client.run()
+    # except KeyboardInterrupt:
+    #     GPIO.cleanup()
