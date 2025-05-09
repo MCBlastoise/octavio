@@ -1,28 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Setting up useful variables
 
-USER_DIRECTORY="/home/${SUDO_USER:-$USER}"
-OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
-export CLIENT_USERNAME="yubzak"
 export SERVER_USERNAME="ayyub"
 export SERVER_HOSTNAME="octavio-server.mit.edu"
+export CLIENT_USERNAME="yubzak"
+USER_DIRECTORY="/home/$CLIENT_USERNAME"
+OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
-# # Do separate installs (e.g. audio stuff) necessary
+# Do separate installs (e.g. audio stuff) necessary
 
-# echo "Installing necessary packages"
-# sudo apt install autossh
-# # exit
+echo "Installing necessary packages"
+sudo apt install autossh portaudio19-dev
 
 # Establish device information
 
-echo "What is the unique device number?"
-read DEVICE_NUM
-export TUNNEL_PORT=$(( $DEVICE_NUM + 2000 ))
-echo "SSH tunnel port will be $TUNNEL_PORT"
+# echo "What is the unique device number?"
+# read DEVICE_NUM
+# export TUNNEL_PORT=$(( $DEVICE_NUM + 2000 ))
+# echo "SSH tunnel port will be $TUNNEL_PORT"
 
-echo
+# echo
 
 # # Create WIFI connections
 
@@ -95,17 +94,23 @@ echo
 
 # Setup tunnel-to-lab systemd service
 
-echo "Establishing tunnel to lab server"
-TUNNEL_SERVICE_NAME="lab-tunnel"
-sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/systemd/system/$TUNNEL_SERVICE_NAME.service
-sudo systemctl daemon-reload
-sudo systemctl enable $TUNNEL_SERVICE_NAME.service
-sudo systemctl start $TUNNEL_SERVICE_NAME.service
-
-# echo $CLIENT_USERNAME
-# sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt"
+# echo "Establishing tunnel to lab server"
+# TUNNEL_SERVICE_NAME="lab-tunnel"
+# sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/systemd/system/$TUNNEL_SERVICE_NAME.service
+# sudo systemctl daemon-reload
+# sudo systemctl enable $TUNNEL_SERVICE_NAME.service
+# sudo systemctl start $TUNNEL_SERVICE_NAME.service
 
 # Make and populate venv environment
+
+echo "Constructing virtual environment"
+mkdir -p $USER_DIRECTORY/.envs
+python3 -m venv $USER_DIRECTORY/.envs/octavio/
+sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
+
+echo "Populating virtual environment"
+source $USER_DIRECTORY/.envs/octavio/bin/activate
+pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
 
 # Construct project-specific files
 
