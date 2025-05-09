@@ -33,6 +33,7 @@ class OctavioClient:
     num_channels = 1
     sampling_rate = 22050
     chunk_secs = 30
+    session_cap_minutes = 45
     silence_threshold = 10
 
     privacy_minutes = 30
@@ -88,7 +89,10 @@ class OctavioClient:
         self.silence = 0
 
     def update_session(self):
+        session_duration = (self.chunks_sent * self.chunk_secs) / 60
         if self.silence >= self.silence_threshold and self.chunks_sent > 0:
+            self.create_new_session()
+        elif session_duration >= self.session_cap_minutes:
             self.create_new_session()
 
     def refresh_client_state(self):
