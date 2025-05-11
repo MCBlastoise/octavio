@@ -1,17 +1,17 @@
+import os
+import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 import log_utils
 import logging
-import sys
 # import RPi.GPIO as GPIO
 import pyaudio
 import math
 import time
 import requests
 import numpy as np
-import os
 import shutil
 import infra
 from hardware import OctavioHardware
