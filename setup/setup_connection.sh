@@ -9,11 +9,6 @@ export CLIENT_USERNAME="yubzak"
 export USER_DIRECTORY="/home/$CLIENT_USERNAME"
 export OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
-# Do separate installs (e.g. audio stuff) necessary
-
-echo "Installing necessary packages"
-sudo apt install autossh portaudio19-dev
-
 # Establish device information
 
 echo "What is the unique device number?"
@@ -109,36 +104,3 @@ sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/syst
 sudo systemctl daemon-reload
 sudo systemctl enable $TUNNEL_SERVICE_NAME.service
 sudo systemctl start $TUNNEL_SERVICE_NAME.service
-
-echo
-
-# Make and populate venv environment
-
-echo "Constructing virtual environment"
-mkdir -p $USER_DIRECTORY/.envs
-python3 -m venv $USER_DIRECTORY/.envs/octavio/
-sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
-
-echo
-
-echo "Populating virtual environment"
-source $USER_DIRECTORY/.envs/octavio/bin/activate
-pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
-
-echo
-
-# Construct project-specific files
-
-echo "Creating project-specific files (infra.py, etc)"
-envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
-
-echo
-
-# Create and activate client systemd service
-
-echo "Creating and activating client service"
-CLIENT_SERVICE_NAME="octavio"
-sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/client_template.txt" > /etc/systemd/system/$CLIENT_SERVICE_NAME.service
-sudo systemctl daemon-reload
-sudo systemctl enable $CLIENT_SERVICE_NAME.service
-sudo systemctl start $CLIENT_SERVICE_NAME.service
