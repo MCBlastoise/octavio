@@ -11,8 +11,8 @@ OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
 # Do separate installs (e.g. audio stuff) necessary
 
-echo "Installing necessary packages"
-sudo apt install autossh portaudio19-dev
+# echo "Installing necessary packages"
+# sudo apt install autossh portaudio19-dev
 
 # Establish device information
 
@@ -27,7 +27,9 @@ sudo apt install autossh portaudio19-dev
 
 # MIT_NETWORK_NAME="A"
 # if nmcli connection show "$MIT_NETWORK_NAME" > /dev/null 2>&1; then
-#     echo "Connection $MIT_NETWORK_NAME already exists. Skipping connection."
+#     echo "Connection $MIT_NETWORK_NAME already exists. Adjusting settings and skipping connection."
+#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect yes
+#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect-priority 8
 # else
 #     echo "Enter your password for the MIT network:"
 #     read MIT_PASSWORD
@@ -46,7 +48,9 @@ sudo apt install autossh portaudio19-dev
 # if [ -z "$HOTSPOT_SSID" ]; then
 #     echo "No hotspot provided. Skipping connection."
 # elif nmcli connection show "$HOTSPOT_SSID" > /dev/null 2>&1; then
-#     echo "Connection $HOTSPOT_SSID already exists. Skipping connection."
+#     echo "Connection $HOTSPOT_SSID already exists. Adjusting settings and skipping connection."
+#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect yes
+#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect-priority 10
 # else
 #     echo "Enter your password for the mobile hotspot:"
 #     read HOTSPOT_PASSWORD
@@ -66,7 +70,9 @@ sudo apt install autossh portaudio19-dev
 # if [ -z "$HOME_SSID" ]; then
 #     echo "No home network provided. Skipping connection."
 # elif nmcli connection show "$HOME_SSID" > /dev/null 2>&1; then
-#     echo "Connection $HOME_SSID already exists. Skipping connection."
+#     echo "Connection $HOME_SSID already exists. Adjusting settings and skipping connection."
+#     nmcli connection modify "$HOME_SSID" connection.autoconnect yes
+#     nmcli connection modify "$HOME_SSID" connection.autoconnect-priority 5
 # else
 #     echo "Enter your password for the home network:"
 #     read HOME_PASSWORD
@@ -103,14 +109,14 @@ sudo apt install autossh portaudio19-dev
 
 # Make and populate venv environment
 
-echo "Constructing virtual environment"
-mkdir -p $USER_DIRECTORY/.envs
-python3 -m venv $USER_DIRECTORY/.envs/octavio/
-sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
+# echo "Constructing virtual environment"
+# mkdir -p $USER_DIRECTORY/.envs
+# python3 -m venv $USER_DIRECTORY/.envs/octavio/
+# sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
 
-echo "Populating virtual environment"
-source $USER_DIRECTORY/.envs/octavio/bin/activate
-pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
+# echo "Populating virtual environment"
+# source $USER_DIRECTORY/.envs/octavio/bin/activate
+# pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
 
 # Construct project-specific files
 
