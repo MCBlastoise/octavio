@@ -6,9 +6,6 @@ After=network.target
 # Replace with your actual username
 User=${CLIENT_USERNAME}
 
-# This is optional — you can set it to where your script lives
-WorkingDirectory=${OCTAVIO_PROJECT_PATH}
-
 # Use the Python interpreter inside the venv
 ExecStart=${USER_DIRECTORY}/.envs/octavio/bin/python ${OCTAVIO_PROJECT_PATH}/client/client.py
 
