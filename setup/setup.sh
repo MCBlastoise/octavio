@@ -6,8 +6,8 @@ set -e
 export SERVER_USERNAME="ayyub"
 export SERVER_HOSTNAME="octavio-server.mit.edu"
 export CLIENT_USERNAME="yubzak"
-USER_DIRECTORY="/home/$CLIENT_USERNAME"
-OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
+export USER_DIRECTORY="/home/$CLIENT_USERNAME"
+export OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
 # Do separate installs (e.g. audio stuff) necessary
 
@@ -121,6 +121,12 @@ echo
 
 # Construct project-specific files
 
-envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
+# envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
 
-# Create (copy over) and activate client systemd service
+# Create and activate client systemd service
+
+CLIENT_SERVICE_NAME="octavio"
+sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/client_template.txt" > /etc/systemd/system/$CLIENT_SERVICE_NAME.service
+sudo systemctl daemon-reload
+sudo systemctl enable $CLIENT_SERVICE_NAME.service
+sudo systemctl start $CLIENT_SERVICE_NAME.service
