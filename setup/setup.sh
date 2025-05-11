@@ -16,12 +16,13 @@ OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
 # Establish device information
 
-# echo "What is the unique device number?"
-# read DEVICE_NUM
-# export TUNNEL_PORT=$(( $DEVICE_NUM + 2000 ))
-# echo "SSH tunnel port will be $TUNNEL_PORT"
+echo "What is the unique device number?"
+read DEVICE_NUM
+export DEVICE_NUM
+export TUNNEL_PORT=$(( $DEVICE_NUM + 2000 ))
+echo "SSH tunnel port will be $TUNNEL_PORT"
 
-# echo
+echo
 
 # # Create WIFI connections
 
@@ -119,5 +120,7 @@ OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 # pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
 
 # Construct project-specific files
+
+envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
 
 # Create (copy over) and activate client systemd service
