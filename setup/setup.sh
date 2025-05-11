@@ -11,8 +11,8 @@ export OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
 
 # Do separate installs (e.g. audio stuff) necessary
 
-# echo "Installing necessary packages"
-# sudo apt install autossh portaudio19-dev
+echo "Installing necessary packages"
+sudo apt install autossh portaudio19-dev
 
 # Establish device information
 
@@ -24,107 +24,119 @@ echo "SSH tunnel port will be $TUNNEL_PORT"
 
 echo
 
-# # Create WIFI connections
+# Create WIFI connections
 
-# MIT_NETWORK_NAME="A"
-# if nmcli connection show "$MIT_NETWORK_NAME" > /dev/null 2>&1; then
-#     echo "Connection $MIT_NETWORK_NAME already exists. Adjusting settings and skipping connection."
-#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect yes
-#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect-priority 8
-# else
-#     echo "Enter your password for the MIT network:"
-#     read MIT_PASSWORD
-#     echo "Creating the following connection:\n\tSSID: $MIT_NETWORK_NAME\n\tPassword: $MIT_PASSWORD"
-#     nmcli connection add type wifi con-name "$MIT_NETWORK_NAME" ssid "$MIT_NETWORK_NAME"
-#     nmcli connection modify "$MIT_NETWORK_NAME" wifi-sec.key-mgmt wpa-psk
-#     nmcli connection modify "$MIT_NETWORK_NAME" wifi-sec.psk "$MIT_PASSWORD"
-#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect yes
-#     nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect-priority 8
-# fi
+MIT_NETWORK_NAME="MIT"
+if nmcli connection show "$MIT_NETWORK_NAME" > /dev/null 2>&1; then
+    echo "Connection $MIT_NETWORK_NAME already exists. Adjusting settings and skipping connection."
+    nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect yes
+    nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect-priority 8
+else
+    echo "Enter your password for the MIT network:"
+    read MIT_PASSWORD
+    echo "Creating the following connection:\n\tSSID: $MIT_NETWORK_NAME\n\tPassword: $MIT_PASSWORD"
+    nmcli connection add type wifi con-name "$MIT_NETWORK_NAME" ssid "$MIT_NETWORK_NAME"
+    nmcli connection modify "$MIT_NETWORK_NAME" wifi-sec.key-mgmt wpa-psk
+    nmcli connection modify "$MIT_NETWORK_NAME" wifi-sec.psk "$MIT_PASSWORD"
+    nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect yes
+    nmcli connection modify "$MIT_NETWORK_NAME" connection.autoconnect-priority 8
+fi
 
-# echo
+echo
 
-# echo "Would you like to enter a mobile hotspot? If so, enter the SSID:"
-# read HOTSPOT_SSID
-# if [ -z "$HOTSPOT_SSID" ]; then
-#     echo "No hotspot provided. Skipping connection."
-# elif nmcli connection show "$HOTSPOT_SSID" > /dev/null 2>&1; then
-#     echo "Connection $HOTSPOT_SSID already exists. Adjusting settings and skipping connection."
-#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect yes
-#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect-priority 10
-# else
-#     echo "Enter your password for the mobile hotspot:"
-#     read HOTSPOT_PASSWORD
-#     echo "Creating the following connection:\n\tSSID: $HOTSPOT_SSID\n\tPassword: $HOTSPOT_PASSWORD"
+echo "Would you like to enter a mobile hotspot? If so, enter the SSID:"
+read HOTSPOT_SSID
+if [ -z "$HOTSPOT_SSID" ]; then
+    echo "No hotspot provided. Skipping connection."
+elif nmcli connection show "$HOTSPOT_SSID" > /dev/null 2>&1; then
+    echo "Connection $HOTSPOT_SSID already exists. Adjusting settings and skipping connection."
+    nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect yes
+    nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect-priority 10
+else
+    echo "Enter your password for the mobile hotspot:"
+    read HOTSPOT_PASSWORD
+    echo "Creating the following connection:\n\tSSID: $HOTSPOT_SSID\n\tPassword: $HOTSPOT_PASSWORD"
 
-#     nmcli connection add type wifi con-name "$HOTSPOT_SSID" ssid "$HOTSPOT_SSID"
-#     nmcli connection modify "$HOTSPOT_SSID" wifi-sec.key-mgmt wpa-psk
-#     nmcli connection modify "$HOTSPOT_SSID" wifi-sec.psk "$HOTSPOT_PASSWORD"
-#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect yes
-#     nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect-priority 10
-# fi
+    nmcli connection add type wifi con-name "$HOTSPOT_SSID" ssid "$HOTSPOT_SSID"
+    nmcli connection modify "$HOTSPOT_SSID" wifi-sec.key-mgmt wpa-psk
+    nmcli connection modify "$HOTSPOT_SSID" wifi-sec.psk "$HOTSPOT_PASSWORD"
+    nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect yes
+    nmcli connection modify "$HOTSPOT_SSID" connection.autoconnect-priority 10
+fi
 
-# echo
+echo
 
-# echo "Would you like to enter a home network? If so, enter the SSID:"
-# read HOME_SSID
-# if [ -z "$HOME_SSID" ]; then
-#     echo "No home network provided. Skipping connection."
-# elif nmcli connection show "$HOME_SSID" > /dev/null 2>&1; then
-#     echo "Connection $HOME_SSID already exists. Adjusting settings and skipping connection."
-#     nmcli connection modify "$HOME_SSID" connection.autoconnect yes
-#     nmcli connection modify "$HOME_SSID" connection.autoconnect-priority 5
-# else
-#     echo "Enter your password for the home network:"
-#     read HOME_PASSWORD
-#     echo "Creating the following connection:\n\tSSID: $HOME_SSID\n\tPassword: $HOME_PASSWORD"
+echo "Would you like to enter a home network? If so, enter the SSID:"
+read HOME_SSID
+if [ -z "$HOME_SSID" ]; then
+    echo "No home network provided. Skipping connection."
+elif nmcli connection show "$HOME_SSID" > /dev/null 2>&1; then
+    echo "Connection $HOME_SSID already exists. Adjusting settings and skipping connection."
+    nmcli connection modify "$HOME_SSID" connection.autoconnect yes
+    nmcli connection modify "$HOME_SSID" connection.autoconnect-priority 5
+else
+    echo "Enter your password for the home network:"
+    read HOME_PASSWORD
+    echo "Creating the following connection:\n\tSSID: $HOME_SSID\n\tPassword: $HOME_PASSWORD"
 
-#     nmcli connection add type wifi con-name "$HOME_SSID" ssid "$HOME_SSID"
-#     nmcli connection modify "$HOME_SSID" wifi-sec.key-mgmt wpa-psk
-#     nmcli connection modify "$HOME_SSID" wifi-sec.psk "$HOME_PASSWORD"
-#     nmcli connection modify "$HOME_SSID" connection.autoconnect yes
-#     nmcli connection modify "$HOME_SSID" connection.autoconnect-priority 5
-# fi
+    nmcli connection add type wifi con-name "$HOME_SSID" ssid "$HOME_SSID"
+    nmcli connection modify "$HOME_SSID" wifi-sec.key-mgmt wpa-psk
+    nmcli connection modify "$HOME_SSID" wifi-sec.psk "$HOME_PASSWORD"
+    nmcli connection modify "$HOME_SSID" connection.autoconnect yes
+    nmcli connection modify "$HOME_SSID" connection.autoconnect-priority 5
+fi
 
-# echo
+echo
 
-# # Generate SSH keys on Pi and exchange with server
+# Generate SSH keys on Pi and exchange with server
 
-# if ! [ -f $USER_DIRECTORY/.ssh/id_ed25519.pub ]; then
-#     echo "SSH keys don't exist on device. Creating them now."
-#     ssh-keygen -t ed25519 -C "\"Raspberry Pi $DEVICE_NUM\""
-# else
-#     echo "Existing SSH keys present. Using found keys for transfer."
-# fi
-# echo "Copying SSH keys to lab server"
-# ssh-copy-id -i $USER_DIRECTORY/.ssh/id_ed25519.pub $SERVER_USERNAME@$SERVER_HOSTNAME
+if ! [ -f $USER_DIRECTORY/.ssh/id_ed25519.pub ]; then
+    echo "SSH keys don't exist on device. Creating them now."
+    ssh-keygen -t ed25519 -C "\"Raspberry Pi $DEVICE_NUM\""
+else
+    echo "Existing SSH keys present. Using found keys for transfer."
+fi
+echo "Copying SSH keys to lab server"
+ssh-copy-id -i $USER_DIRECTORY/.ssh/id_ed25519.pub $SERVER_USERNAME@$SERVER_HOSTNAME
+
+echo
 
 # Setup tunnel-to-lab systemd service
 
-# echo "Establishing tunnel to lab server"
-# TUNNEL_SERVICE_NAME="lab-tunnel"
-# sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/systemd/system/$TUNNEL_SERVICE_NAME.service
-# sudo systemctl daemon-reload
-# sudo systemctl enable $TUNNEL_SERVICE_NAME.service
-# sudo systemctl start $TUNNEL_SERVICE_NAME.service
+echo "Establishing tunnel to lab server"
+TUNNEL_SERVICE_NAME="lab-tunnel"
+sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/systemd/system/$TUNNEL_SERVICE_NAME.service
+sudo systemctl daemon-reload
+sudo systemctl enable $TUNNEL_SERVICE_NAME.service
+sudo systemctl start $TUNNEL_SERVICE_NAME.service
+
+echo
 
 # Make and populate venv environment
 
-# echo "Constructing virtual environment"
-# mkdir -p $USER_DIRECTORY/.envs
-# python3 -m venv $USER_DIRECTORY/.envs/octavio/
-# sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
+echo "Constructing virtual environment"
+mkdir -p $USER_DIRECTORY/.envs
+python3 -m venv $USER_DIRECTORY/.envs/octavio/
+sudo chown -R $CLIENT_USERNAME:$CLIENT_USERNAME $USER_DIRECTORY/.envs/
 
-# echo "Populating virtual environment"
-# source $USER_DIRECTORY/.envs/octavio/bin/activate
-# pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
+echo
+
+echo "Populating virtual environment"
+source $USER_DIRECTORY/.envs/octavio/bin/activate
+pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
+
+echo
 
 # Construct project-specific files
 
-# envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
+echo "Creating project-specific files (infra.py, etc)"
+envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
+
+echo
 
 # Create and activate client systemd service
 
+echo "Creating and activating client service"
 CLIENT_SERVICE_NAME="octavio"
 sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/client_template.txt" > /etc/systemd/system/$CLIENT_SERVICE_NAME.service
 sudo systemctl daemon-reload
