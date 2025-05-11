@@ -78,7 +78,7 @@ def add_piano_music():
         try:
             os.remove(filename)
         except FileNotFoundError:
-            print(f'{filename} already deleted')
+            logger.info(f'{filename} already deleted')
 
     logger.info(f"Successfully added chunk {chunk} to piano {iid}'s existing session {session_id}")
 

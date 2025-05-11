@@ -66,8 +66,8 @@ def convert_to_midi_bp(input_audio, output_dir, bp_model):
 
 def display_midi(midi_filename):
     mid = mido.MidiFile(midi_filename)
-    for msg in mid:
-        print(msg)
+    # for msg in mid:
+    #     print(msg)
 
 def combine_midi(midi_filename1, midi_filename2, output_filename):
     START_END_THRESHOLD = 0.25
@@ -144,12 +144,12 @@ def extract_midi(input_data, bp_model, temp_dir='./temps'):
 
         save_frames_to_file(frame_data=input_data, filename=wav_filename)
 
-        print("Frames saved to file")
+        # print("Frames saved to file")
 
         # convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
         mid_filename = convert_to_midi_bp(input_audio=wav_filename, output_dir=unique_temp_dir, bp_model=bp_model)
 
-        print("Converted to MIDI")
+        # print("Converted to MIDI")
 
         empty = midi_is_empty(midi_filename=mid_filename)
 
@@ -163,7 +163,8 @@ def extract_midi(input_data, bp_model, temp_dir='./temps'):
         try:
             shutil.rmtree(unique_temp_dir)
         except FileNotFoundError:
-            print(f'{unique_temp_dir} already deleted')
+            # print(f'{unique_temp_dir} already deleted')
+            pass
 
         # for filename in (wav_filename, mid_filename):
         #     try:
