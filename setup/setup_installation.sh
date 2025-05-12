@@ -56,3 +56,7 @@ sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/client_template.txt" > /etc/syst
 sudo systemctl daemon-reload
 sudo systemctl enable $CLIENT_SERVICE_NAME.service
 sudo systemctl start $CLIENT_SERVICE_NAME.service
+
+echo
+
+echo "Installation steps complete"

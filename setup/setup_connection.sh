@@ -104,3 +104,7 @@ sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/syst
 sudo systemctl daemon-reload
 sudo systemctl enable $TUNNEL_SERVICE_NAME.service
 sudo systemctl start $TUNNEL_SERVICE_NAME.service
+
+echo
+
+echo "Connection steps complete"
