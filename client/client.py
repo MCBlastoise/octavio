@@ -170,7 +170,7 @@ class OctavioClient:
                         json=request_data,
                         headers=headers
                     )
-                except ConnectionError as e:
+                except Exception as e:
                     logger.info(f"Failed attempt {i + 1} to contact server with request, retrying...")
                     time.sleep(self.server_retry_wait_seconds)
                 else:
