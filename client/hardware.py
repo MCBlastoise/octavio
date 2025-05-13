@@ -1,4 +1,6 @@
 import gpiozero
+import signal
+import sys
 
 class OctavioHardware:
     def __init__(self, red_pin=17, green_pin=27, button_pin=18):
@@ -32,6 +34,12 @@ class OctavioHardware:
 
 def test_hardware_repl():
     hardware = OctavioHardware()
+    def on_shutdown():
+        hardware.deactivate_light()
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, lambda signum, frame: on_shutdown())
+    signal.signal(signal.SIGINT, lambda signum, frame: on_shutdown())
+
     test_instructions = "Engaging hardware testing REPL\n" \
     "Options are:\n" \
     "\t'd' for lights-off\n" \
