@@ -48,12 +48,12 @@ def test_hardware_repl():
     "\t'r' for red\n" \
     "\t'y' for yellow\n" \
     "\t'b' to show if button is pressed\n" \
-    "\t'exit' to quit\n\n"
+    "\t'exit' or 'quit' to quit\n\n"
 
     while True:
         command = input(test_instructions)
         match command.strip().lower():
-            case 'exit':
+            case 'exit' | 'quit':
                 print('Exiting hardware testing REPL')
                 break
             case 'd':
