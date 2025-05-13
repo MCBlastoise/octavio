@@ -42,13 +42,13 @@ def test_hardware_repl():
 
     print('Engaging hardware testing REPL')
 
-    test_instructions = "Options are:\n" \
+    test_instructions = "\nOptions are:\n" \
     "\t'd' for lights-off\n" \
     "\t'g' for green\n" \
     "\t'r' for red\n" \
     "\t'y' for yellow\n" \
     "\t'b' to show if button is pressed\n" \
-    "\t'exit' to quit\n"
+    "\t'exit' to quit\n\n"
 
     while True:
         command = input(test_instructions)
