@@ -172,6 +172,10 @@ cython_debug/
 
 temps/
 infra.py
+
 data/
+partials/
+
 misc/
+
 *.db
