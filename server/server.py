@@ -51,13 +51,13 @@ def add_piano_music():
 
     logger.info(f"MIDI receieved from piano {iid} in session {session_id}")
 
-    session_dir = f'./partials/instr_{iid}/session_{session_id}'
-    session_exists = os.path.isdir(session_dir)
-    os.makedirs(session_dir, exist_ok=True)
-
     official_data_dir = './data'
     os.makedirs(official_data_dir, exist_ok=True)
     official_session_filename = f'{official_data_dir}/{session_id}_{iid}.mid'
+
+    session_dir = f'./partials/instr_{iid}/session_{session_id}'
+    session_exists = os.path.isdir(session_dir)
+    os.makedirs(session_dir, exist_ok=True)
 
     if not session_exists:
         logger.info(f"Session not found, starting one")
