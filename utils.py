@@ -1,4 +1,5 @@
 import log_utils
+import string
 import numpy as np
 import pyaudio
 import wave
@@ -14,7 +15,8 @@ with log_utils.no_stderr():
     from basic_pitch.inference import predict_and_save
 
 def generate_id():
-    return ''.join([str(random.randint(0, 9)) for _ in range(8)])
+    id_options = string.ascii_lowercase + string.digits
+    return ''.join(random.choices(population=id_options, k=10))
 
 def wav_to_np(wav_filename):
     file_contents = read(wav_filename)
