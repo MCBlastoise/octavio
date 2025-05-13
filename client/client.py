@@ -39,8 +39,10 @@ class OctavioClient:
     chunk_secs = 30
     session_cap_minutes = 45
     silence_threshold = 10
-
     privacy_minutes = 30
+    num_server_attempts = 2
+    server_retry_wait_seconds = 15
+    server_failure_wait_seconds = 60
 
     temp_dir = './temps'
 
@@ -87,31 +89,35 @@ class OctavioClient:
 
         logger.info("System initialized successfully")
 
-    def end_stream(self):
-        self.stream.close()
-        self.stream = None
-
     def create_new_session(self):
         self.session = utils.generate_id()
         self.chunks_sent = 0
         self.silence = 0
 
-    def update_session(self):
+        logger.info(f"Created new session {self.session}")
+
+    def end_stream(self):
+        self.create_new_session()
+
+        logger.info("System closing audio stream")
+        self.stream.close()
+        self.stream = None
+
+    def update_session(self, current_time):
         session_duration = (self.chunks_sent * self.chunk_secs) / 60
         if (
             (self.silence >= self.silence_threshold and self.chunks_sent > 0) or
             (session_duration >= self.session_cap_minutes)
         ):
             self.end_stream()
-            self.create_new_session()
+        elif self.hardware.button_pressed:
+            self.privacy_last_requested = current_time
+            logger.info(f"User requested privacy")
+            self.end_stream()
 
     def refresh_client_state(self):
-        self.update_session()
-
         current_time = time.time()
-        if self.hardware.button_pressed:
-            self.privacy_last_requested = current_time
-            self.create_new_session()
+        self.update_session(current_time)
 
         self.is_recording = (
             self.privacy_last_requested is None or
@@ -156,15 +162,26 @@ class OctavioClient:
             }
 
             logger.info("Attempting to transmit MIDI")
-            r = requests.post(
-                self.request_url,
-                json=request_data,
-                headers=headers
-            )
-            logger.info("MIDI transmitted successfully")
-            self.chunks_sent += 1
 
-            return None, pyaudio.paContinue
+            for i in range(self.num_server_attempts):
+                try:
+                    r = requests.post(
+                        self.request_url,
+                        json=request_data,
+                        headers=headers
+                    )
+                except ConnectionError as e:
+                    logger.info(f"Failed attempt {i + 1} to contact server with request, retrying...")
+                    time.sleep(self.server_retry_wait_seconds)
+                else:
+                    logger.info("MIDI transmitted successfully")
+                    self.chunks_sent += 1
+                    return None, pyaudio.paContinue
+
+            logger.info("Failed to contact server with request. Restarting...")
+            time.sleep(self.server_failure_wait_seconds)
+            self.end_stream()
+
 
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
         stream = self.audio.open(
@@ -184,19 +201,9 @@ class OctavioClient:
             if self.stream is None and self.is_recording:
                 logger.info("System starting a new audio stream")
                 self.stream = self.record_audio()
-            elif self.stream is not None and not self.is_recording:
-                logger.info("User requested privacy")
-                logger.info("System closing audio stream")
-                self.end_stream()
 
 if __name__ == '__main__':
     ...
 
     client = OctavioClient()
     client.run()
-
-    # try:
-    #     client = OctavioClient()
-    #     client.run()
-    # except KeyboardInterrupt:
-    #     GPIO.cleanup()
