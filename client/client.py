@@ -13,6 +13,7 @@ import time
 import requests
 import numpy as np
 import shutil
+import signal
 import infra
 from hardware import OctavioHardware
 import utils
@@ -88,7 +89,14 @@ class OctavioClient:
 
         self.hardware = OctavioHardware()
 
+        signal.signal(signal.SIGTERM, self.on_shutdown)
+        signal.signal(signal.SIGINT, self.on_shutdown)
+
         logger.info("System initialized successfully")
+
+    def on_shutdown(self):
+        logger.info('System shutting down, performing hardware teardown')
+        self.hardware.deactivate_light()
 
     def create_new_session(self):
         session_id = utils.generate_id()
