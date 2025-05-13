@@ -96,6 +96,7 @@ class OctavioClient:
     def on_shutdown(self):
         logger.info('System shutting down, performing hardware teardown')
         self.hardware.deactivate_light()
+        sys.exit(0)
 
     def create_new_session(self):
         session_id = utils.generate_id()
