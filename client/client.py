@@ -183,6 +183,7 @@ class OctavioClient:
             logger.info("Failed to contact server with request. Restarting...")
             time.sleep(self.server_failure_wait_seconds)
             self.end_stream_flag = True
+            return None, pyaudio.paContinue
 
 
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
