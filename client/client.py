@@ -98,8 +98,6 @@ class OctavioClient:
         self.chunks_sent = 0
         self.silence = 0
 
-
-
     def end_stream(self):
         self.create_new_session()
 
