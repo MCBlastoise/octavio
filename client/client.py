@@ -40,7 +40,7 @@ class OctavioClient:
     session_cap_minutes = 45
     silence_threshold = 10
     privacy_minutes = 30
-    num_server_attempts = 2
+    num_server_attempts = 3
     server_retry_wait_seconds = 15
     server_failure_wait_seconds = 60
 
