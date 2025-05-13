@@ -91,11 +91,14 @@ class OctavioClient:
         logger.info("System initialized successfully")
 
     def create_new_session(self):
-        self.session = utils.generate_id()
+        session_id = utils.generate_id()
+        logger.info(f"Creating new session {self.session}")
+
+        self.session = session_id
         self.chunks_sent = 0
         self.silence = 0
 
-        logger.info(f"Created new session {self.session}")
+
 
     def end_stream(self):
         self.create_new_session()
