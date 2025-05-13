@@ -55,6 +55,8 @@ def add_piano_music():
     session_exists = os.path.isdir(session_dir)
     os.makedirs(session_dir, exist_ok=True)
 
+    official_data_dir = './data'
+    os.makedirs(official_data_dir, exist_ok=True)
     official_session_filename = f'{official_data_dir}/{session_id}_{iid}.mid'
 
     if not session_exists:
@@ -93,9 +95,6 @@ def add_piano_music():
         except FileNotFoundError:
             logger.info(f'{filename} already deleted')
     logger.info(f"Successfully added chunk {chunk} to piano {iid}'s existing session {session_id}")
-
-    official_data_dir = './data'
-    os.makedirs(official_data_dir, exist_ok=True)
 
     shutil.copyfile(out_filename, official_session_filename)
     db_queries.refresh_db_session(session_id=session_id, instrument_id=iid, is_test=is_test)
