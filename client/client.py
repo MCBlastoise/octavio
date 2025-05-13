@@ -59,6 +59,10 @@ class OctavioClient:
     bp_model = Model(_tflite_path)
 
     def __init__(self):
+        self.hardware = OctavioHardware()
+        signal.signal(signal.SIGTERM, lambda signum, frame: self.on_shutdown())
+        signal.signal(signal.SIGINT, lambda signum, frame: self.on_shutdown())
+
         self.privacy_last_requested = None
         self.is_recording = True
         self.stream = None
@@ -86,11 +90,6 @@ class OctavioClient:
             self.device_index = infra.RECORDING_DEVICE_INDEX
         except NameError:
             self.device_index = self.identify_recording_device()
-
-        self.hardware = OctavioHardware()
-
-        signal.signal(signal.SIGTERM, self.on_shutdown)
-        signal.signal(signal.SIGINT, self.on_shutdown)
 
         logger.info("System initialized successfully")
 
