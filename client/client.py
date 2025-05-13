@@ -65,6 +65,7 @@ class OctavioClient:
         self.session = utils.generate_id()
         self.chunks_sent = 0
         self.silence = 0
+        self.end_stream_flag = False
 
         if os.path.isdir(self.temp_dir):
             shutil.rmtree(self.temp_dir)
@@ -109,11 +110,11 @@ class OctavioClient:
             (self.silence >= self.silence_threshold and self.chunks_sent > 0) or
             (session_duration >= self.session_cap_minutes)
         ):
-            self.end_stream()
+            self.end_stream_flag = True
         elif self.hardware.button_pressed:
             self.privacy_last_requested = current_time
             logger.info(f"User requested privacy")
-            self.end_stream()
+            self.end_stream_flag = True
 
     def refresh_client_state(self):
         current_time = time.time()
@@ -180,7 +181,7 @@ class OctavioClient:
 
             logger.info("Failed to contact server with request. Restarting...")
             time.sleep(self.server_failure_wait_seconds)
-            self.end_stream()
+            self.end_stream_flag = True
 
 
         chunk_frames = int(math.ceil(self.chunk_secs * self.sampling_rate))
@@ -201,6 +202,9 @@ class OctavioClient:
             if self.stream is None and self.is_recording:
                 logger.info("System starting a new audio stream")
                 self.stream = self.record_audio()
+            elif self.end_stream_flag:
+                self.end_stream_flag = False
+                self.end_stream()
 
 if __name__ == '__main__':
     ...
