@@ -18,6 +18,10 @@ class OctavioHardware:
         self.red_led.off()
         self.green_led.on()
 
+    def shine_yellow(self):
+        self.green_led.on()
+        self.red_led.on()
+
     def deactivate_light(self):
         self.red_led.off()
         self.green_led.off()
@@ -25,3 +29,40 @@ class OctavioHardware:
     @property
     def button_pressed(self):
         return self.button.is_pressed
+
+def test_hardware_repl():
+    hardware = OctavioHardware()
+    test_instructions = "Engaging hardware testing REPL\n" \
+    "Options are:\n" \
+    "\t'd' for lights-off\n" \
+    "\t'g' for green\n" \
+    "\t'r' for red\n" \
+    "\t'y' for yellow\n" \
+    "\t'b' to show if button is pressed\n" \
+    "\t'exit' to quit"
+
+    while True:
+        command = input(test_instructions)
+        match command.strip().lower():
+            case 'exit':
+                print('Exiting hardware testing REPL')
+                break
+            case 'd':
+                hardware.deactivate_light()
+            case 'g':
+                hardware.shine_green()
+            case 'r':
+                hardware.shine_red()
+            case 'y':
+                hardware.shine_yellow()
+            case 'b':
+                b = hardware.button_pressed
+                text = 'Button is pressed' if b else 'Button is not pressed'
+                print(text)
+            case _:
+                print('Not a valid command to test')
+
+if __name__ == '__main__':
+    ...
+
+    test_hardware_repl()
