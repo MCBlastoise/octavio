@@ -87,6 +87,10 @@ class OctavioClient:
 
         logger.info("System initialized successfully")
 
+    def end_stream(self):
+        self.stream.close()
+        self.stream = None
+
     def create_new_session(self):
         self.session = utils.generate_id()
         self.chunks_sent = 0
@@ -94,9 +98,11 @@ class OctavioClient:
 
     def update_session(self):
         session_duration = (self.chunks_sent * self.chunk_secs) / 60
-        if self.silence >= self.silence_threshold and self.chunks_sent > 0:
-            self.create_new_session()
-        elif session_duration >= self.session_cap_minutes:
+        if (
+            (self.silence >= self.silence_threshold and self.chunks_sent > 0) or
+            (session_duration >= self.session_cap_minutes)
+        ):
+            self.end_stream()
             self.create_new_session()
 
     def refresh_client_state(self):
@@ -181,8 +187,7 @@ class OctavioClient:
             elif self.stream is not None and not self.is_recording:
                 logger.info("User requested privacy")
                 logger.info("System closing audio stream")
-                self.stream.close()
-                self.stream = None
+                self.end_stream()
 
 if __name__ == '__main__':
     ...
