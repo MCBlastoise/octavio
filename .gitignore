@@ -174,3 +174,4 @@ temps/
 infra.py
 data/
 misc/
+*.db
