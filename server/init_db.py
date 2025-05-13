@@ -1,16 +1,11 @@
 import sqlite3
 from contextlib import closing
-
-def get_db_filename(is_test):
-    prod_db_filename = 'octavio_prod.db'
-    test_db_filename = 'octavio_test.db'
-    db_filename = test_db_filename if is_test else prod_db_filename
-    return db_filename
+import server_utils
 
 def create_db(is_test=False):
-    db_filename = get_db_filename(is_test)
+    db_filename = server_utils.get_db_filename(is_test)
 
-    creator_sql_filename = './queries/create_db.sql'
+    creator_sql_filename = './sql_scripts/create_db.sql'
     with open(creator_sql_filename, "r") as f:
         creator_sql = f.read()
 
@@ -20,7 +15,7 @@ def create_db(is_test=False):
             connection.commit()
 
 def insert_test_data():
-    db_filename = get_db_filename(is_test=True)
+    db_filename = server_utils.get_db_filename(is_test=True)
     test_dataset = [
         {"session_id": "4cjlh0q21j", "instrument_id": "5"},
         {"session_id": "fwvum8wqew", "instrument_id": "9"},
@@ -41,7 +36,7 @@ def insert_test_data():
 
 
 def inspect_db(is_test=False):
-    db_filename = get_db_filename(is_test)
+    db_filename = server_utils.get_db_filename(is_test)
     with sqlite3.connect(db_filename) as connection:
         with closing(connection.cursor()) as cursor:
             table_display_sql = "SELECT name FROM sqlite_master WHERE type='table';"

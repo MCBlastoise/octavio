@@ -4,14 +4,16 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from flask import Flask, request
+from flask import Flask, request, current_app
 import numpy as np
 import pyaudio
 import wave
+import shutil
 import utils
 import datetime
 import pathlib
 import logging
+import db_queries
 
 root = logging.getLogger()
 for handler in root.handlers[:]:
@@ -28,12 +30,17 @@ logger.addHandler(handler)
 app = Flask(__name__)
 file_counter = 0
 
+# Set prod-server or test-server (default=prod)
+app.config['is_test'] = False
+
 @app.route("/")
 def hello_world():
     return 'Bingo'
 
 @app.route("/piano", methods=['POST'])
 def add_piano_music():
+    is_test = current_app.config['is_test']
+
     j = request.json
 
     iid = j['instrument_id']
@@ -44,9 +51,11 @@ def add_piano_music():
 
     logger.info(f"MIDI receieved from piano {iid} in session {session_id}")
 
-    session_dir = f'./data/instr_{iid}/session_{session_id}'
+    session_dir = f'./partials/instr_{iid}/session_{session_id}'
     session_exists = os.path.isdir(session_dir)
     os.makedirs(session_dir, exist_ok=True)
+
+    official_session_filename = f'{official_data_dir}/{session_id}_{iid}.mid'
 
     if not session_exists:
         logger.info(f"Session not found, starting one")
@@ -58,6 +67,9 @@ def add_piano_music():
         midi_filename = f'{session_dir}/running_0.mid'
         utils.deserialize_midi_file(msgs=messages, ticks_per_beat=ticks_per_beat, out_filename=midi_filename)
         logger.info(f"Added starting MIDI to new session")
+
+        shutil.copyfile(midi_filename, official_session_filename)
+        db_queries.add_db_session(session_id=session_id, instrument_id=iid, is_test=is_test)
 
         return 'Success'
 
@@ -79,10 +91,15 @@ def add_piano_music():
             os.remove(filename)
         except FileNotFoundError:
             logger.info(f'{filename} already deleted')
-
     logger.info(f"Successfully added chunk {chunk} to piano {iid}'s existing session {session_id}")
 
-    utils.display_midi(out_filename)
+    official_data_dir = './data'
+    os.makedirs(official_data_dir, exist_ok=True)
+
+    shutil.copyfile(out_filename, official_session_filename)
+    db_queries.refresh_db_session(session_id=session_id, instrument_id=iid, is_test=is_test)
+
+    # utils.display_midi(out_filename)
     return 'Success'
 
 @app.route("/keyboard", methods=['POST'])
