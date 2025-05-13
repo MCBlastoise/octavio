@@ -70,6 +70,7 @@ def add_piano_music():
 
         shutil.copyfile(midi_filename, official_session_filename)
         db_queries.add_db_session(session_id=session_id, instrument_id=iid, is_test=is_test)
+        logger.info(f"Adding session {session_id} from instrument {iid} to DB for the first time")
 
         return 'Success'
 
@@ -98,6 +99,7 @@ def add_piano_music():
 
     shutil.copyfile(out_filename, official_session_filename)
     db_queries.refresh_db_session(session_id=session_id, instrument_id=iid, is_test=is_test)
+    logger.info(f"Refreshing session {session_id} from instrument {iid} in DB")
 
     # utils.display_midi(out_filename)
     return 'Success'
