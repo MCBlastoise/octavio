@@ -47,7 +47,7 @@ def test_hardware_repl():
     "\t'r' for red\n" \
     "\t'y' for yellow\n" \
     "\t'b' to show if button is pressed\n" \
-    "\t'exit' to quit"
+    "\t'exit' to quit\n"
 
     while True:
         command = input(test_instructions)
