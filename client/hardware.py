@@ -40,8 +40,9 @@ def test_hardware_repl():
     signal.signal(signal.SIGTERM, lambda signum, frame: on_shutdown())
     signal.signal(signal.SIGINT, lambda signum, frame: on_shutdown())
 
-    test_instructions = "Engaging hardware testing REPL\n" \
-    "Options are:\n" \
+    print('Engaging hardware testing REPL')
+
+    test_instructions = "Options are:\n" \
     "\t'd' for lights-off\n" \
     "\t'g' for green\n" \
     "\t'r' for red\n" \
