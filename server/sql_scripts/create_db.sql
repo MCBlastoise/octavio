@@ -6,4 +6,5 @@ CREATE TABLE IF NOT EXISTS sessions (
     last_updated TEXT DEFAULT (datetime('now')),
     song_mode TEXT,
     song_key TEXT
+    UNIQUE(session_id, instrument_id)
 );
