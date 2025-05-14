@@ -1,0 +1,9 @@
+CLIENT_USERNAME="yubzak"
+USER_DIRECTORY="/home/$CLIENT_USERNAME"
+OCTAVIO_PROJECT_PATH="$USER_DIRECTORY/code/octavio"
+CLIENT_SERVICE_NAME="octavio"
+
+cd $OCTAVIO_PROJECT_PATH
+sudo -E systemctl stop $CLIENT_SERVICE_NAME
+git pull
+sudo -E systemctl start $CLIENT_SERVICE_NAME
