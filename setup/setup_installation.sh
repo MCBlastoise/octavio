@@ -63,7 +63,7 @@ echo
 
 echo "Adding helper command rs which automatically pulls latest code and restarts service"
 alias rs="source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh"
-cat "alias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'" >> ~/.bashrc
+echo "alias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'" >> ~/.bashrc
 
 echo
 
