@@ -59,11 +59,12 @@ sudo systemctl start $CLIENT_SERVICE_NAME.service
 
 echo
 
-# Adding helper scripts
+# Adding helper scripts and extras to .bashrc
 
-echo "Adding helper command rs which automatically pulls latest code and restarts service"
+echo "Adding helper command rs which automatically pulls latest code and restarts service (and extras to bashrc)"
+printf "\nexport PYTHONIOENCODING=utf-8\n" >> ~/.bashrc
+printf "\nalias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'\n" >> ~/.bashrc
 alias rs="source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh"
-echo "alias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'" >> ~/.bashrc
 
 echo
 
