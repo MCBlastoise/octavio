@@ -12,6 +12,11 @@ class OctavioHardware:
         self.green_led = gpiozero.LED(green_pin)
         self.button = gpiozero.Button(button_pin)
 
+    def close_devices(self):
+        self.green_led.close()
+        self.red_led.close()
+        self.button.close()
+
     def shine_red(self):
         self.green_led.off()
         self.red_led.on()
@@ -36,6 +41,7 @@ def test_hardware_repl():
     hardware = OctavioHardware()
     def on_shutdown():
         hardware.deactivate_light()
+        hardware.close_devices()
         sys.exit(0)
     signal.signal(signal.SIGTERM, lambda signum, frame: on_shutdown())
     signal.signal(signal.SIGINT, lambda signum, frame: on_shutdown())
