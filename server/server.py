@@ -57,11 +57,18 @@ def add_piano_music():
 
     session_dir = f'./partials/instr_{iid}/session_{session_id}'
     session_exists = os.path.isdir(session_dir)
-    os.makedirs(session_dir, exist_ok=True)
-
-    if not session_exists:
+    session_populated = session_exists
+    if session_exists:
+        files = os.listdir(session_dir)
+        running_mid_filename = next( (file for file in files if file.startswith('running') and file.endswith('.mid')), None )
+        session_populated = session_populated and running_mid_filename != None
+    else:
+        os.makedirs(session_dir, exist_ok=True)
         logger.info(f"Session not found, starting one")
 
+    if not session_populated:
+        if session_exists:
+            print("Session existed, but was corrupted (no running file found). Starting over with most recent data.)")
         current_date = str(datetime.date.today())
         date_filename = f'{session_dir}/{current_date}.txt'
         pathlib.Path(date_filename).touch()
@@ -76,11 +83,12 @@ def add_piano_music():
 
         return 'Success'
 
-    files = os.listdir(session_dir)
-    running_mid_filename = next( (file for file in files if file.startswith('running') and file.endswith('.mid')), None )
+    # files = os.listdir(session_dir)
+    # running_mid_filename = next( (file for file in files if file.startswith('running') and file.endswith('.mid')), None )
 
-    if running_mid_filename is None:
-        return 'Failure'
+    # if running_mid_filename is None:
+    #     logger.info(f'No running file for session {session_id} found to attach to')
+    #     return 'Failure'
 
     running_mid_filepath = f'{session_dir}/{running_mid_filename}'
     temp_mid_filepath = f'{session_dir}/temp_{chunk}.mid'
