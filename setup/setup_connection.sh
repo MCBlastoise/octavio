@@ -96,6 +96,11 @@ ssh-copy-id -i $USER_DIRECTORY/.ssh/id_ed25519.pub $SERVER_USERNAME@$SERVER_HOST
 
 echo
 
+# Install autossh for lab tunnel
+
+echo "Installing necessary packages"
+sudo apt install autossh
+
 # Setup tunnel-to-lab systemd service
 
 echo "Establishing tunnel to lab server"
