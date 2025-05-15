@@ -37,7 +37,7 @@ echo
 
 echo "Populating virtual environment"
 source $USER_DIRECTORY/.envs/octavio/bin/activate
-pip install -r "$OCTAVIO_PROJECT_PATH/client_requirements.txt"
+pip install -r "$OCTAVIO_PROJECT_PATH/client/client_requirements.txt"
 
 echo
 
