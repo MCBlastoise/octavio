@@ -62,9 +62,8 @@ echo
 # Adding helper scripts and extras to .bashrc
 
 echo "Adding helper command rs which automatically pulls latest code and restarts service (and extras to bashrc)"
-printf "\nexport PYTHONIOENCODING=utf-8\n" >> ~/.bashrc
-printf "\nalias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'\n" >> ~/.bashrc
-alias rs="source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh"
+printf "\nexport PYTHONIOENCODING=utf-8\n" >> $USER_DIRECTORY/.bashrc
+printf "\nalias rs='source $OCTAVIO_PROJECT_PATH/admin_scripts/refresh_client.sh'\n" >> $USER_DIRECTORY/.bashrc
 
 echo
 
