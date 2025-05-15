@@ -92,6 +92,7 @@ else
     echo "Existing SSH keys present. Using found keys for transfer."
 fi
 echo "Copying SSH keys to lab server"
+sudo -u "$SUDO_USER" ssh-keyscan -H $SERVER_HOSTNAME >> $USER_DIRECTORY/.ssh/known_hosts
 ssh-copy-id -i $USER_DIRECTORY/.ssh/id_ed25519.pub $SERVER_USERNAME@$SERVER_HOSTNAME
 
 echo
