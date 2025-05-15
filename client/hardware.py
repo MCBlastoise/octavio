@@ -3,7 +3,7 @@ import signal
 import sys
 
 class OctavioHardware:
-    def __init__(self, red_pin=23, green_pin=18, button_pin=20):
+    def __init__(self, red_pin=25, green_pin=24, button_pin=20):
         self.red_pin = red_pin
         self.green_pin = green_pin
         self.button_pin = button_pin
