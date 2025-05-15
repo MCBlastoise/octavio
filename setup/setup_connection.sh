@@ -87,7 +87,7 @@ echo
 
 if ! [ -f $USER_DIRECTORY/.ssh/id_ed25519.pub ]; then
     echo "SSH keys don't exist on device. Creating them now."
-    ssh-keygen -t ed25519 -C "\"Raspberry Pi $DEVICE_NUM\""
+    sudo -u "$SUDO_USER" ssh-keygen -t ed25519 -C "\"Raspberry Pi $DEVICE_NUM\""
 else
     echo "Existing SSH keys present. Using found keys for transfer."
 fi
