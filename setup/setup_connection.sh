@@ -98,6 +98,7 @@ echo
 # Install autossh for lab tunnel
 
 echo "Installing necessary packages"
+# sudo rm -vrf /var/lib/apt/lists/* # Might need for corrupt lists?
 sudo apt-get update
 sudo apt install autossh
 
