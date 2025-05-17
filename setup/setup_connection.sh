@@ -98,6 +98,7 @@ echo
 # Install autossh for lab tunnel
 
 echo "Installing necessary packages"
+sudo apt-get update
 sudo apt install autossh
 
 # Setup tunnel-to-lab systemd service
