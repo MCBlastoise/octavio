@@ -22,7 +22,7 @@ echo
 # Do separate installs (e.g. audio stuff) necessary
 
 echo "Installing necessary packages"
-sudo apt install portaudio19-dev
+sudo apt install -y portaudio19-dev
 
 echo
 
