@@ -99,7 +99,7 @@ echo
 
 echo "Installing necessary packages"
 # sudo rm -vrf /var/lib/apt/lists/* # Might need for corrupt lists?
-sudo apt-get update
+sudo apt update
 sudo apt install autossh
 
 # Setup tunnel-to-lab systemd service
