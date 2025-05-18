@@ -109,8 +109,9 @@ TUNNEL_SERVICE_NAME="lab-tunnel"
 sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/tunnel_template.txt" > /etc/systemd/system/$TUNNEL_SERVICE_NAME.service
 sudo systemctl daemon-reload
 sudo systemctl enable $TUNNEL_SERVICE_NAME.service
-sudo systemctl start $TUNNEL_SERVICE_NAME.service
 
 echo
 
 echo "Connection steps complete"
+
+# Reboot Pi now to test whether tunnel functions correctly
