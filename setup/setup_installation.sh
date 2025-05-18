@@ -55,7 +55,6 @@ CLIENT_SERVICE_NAME="octavio"
 sudo -E envsubst < "$OCTAVIO_PROJECT_PATH/setup/client_template.txt" > /etc/systemd/system/$CLIENT_SERVICE_NAME.service
 sudo systemctl daemon-reload
 sudo systemctl enable $CLIENT_SERVICE_NAME.service
-sudo systemctl start $CLIENT_SERVICE_NAME.service
 
 echo
 
