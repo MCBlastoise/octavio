@@ -60,6 +60,7 @@ class OctavioClient:
 
     def __init__(self):
         self.hardware = OctavioHardware()
+        self.hardware.shine_green()
         signal.signal(signal.SIGTERM, lambda signum, frame: self.on_shutdown())
         signal.signal(signal.SIGINT, lambda signum, frame: self.on_shutdown())
 
