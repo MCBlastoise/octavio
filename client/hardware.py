@@ -10,7 +10,7 @@ class OctavioHardware:
 
         self.red_led = gpiozero.LED(red_pin)
         self.green_led = gpiozero.LED(green_pin)
-        self.button = gpiozero.Button(button_pin)
+        self.button = gpiozero.Button(button_pin, bounce_time=0.1)
 
     def close_devices(self):
         self.green_led.close()

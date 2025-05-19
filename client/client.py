@@ -65,6 +65,7 @@ class OctavioClient:
         signal.signal(signal.SIGINT, lambda signum, frame: self.on_shutdown())
 
         self.privacy_last_requested = None
+        self.last_hardware_interaction = time.time()
         self.is_recording = True
         self.stream = None
 
@@ -125,14 +126,16 @@ class OctavioClient:
             self.end_stream_flag = True
         elif self.hardware.button_pressed and self.is_recording:
             self.privacy_last_requested = current_time
-            logger.info(f"User requested privacy")
+            self.last_hardware_interaction = current_time
             self.end_stream_flag = True
+            logger.info(f"User requested privacy")
         elif (
             self.hardware.button_pressed and
             not self.is_recording and
-            current_time - self.privacy_last_requested >= 2.0
+            current_time - self.last_hardware_interaction >= 2.0
         ):
             self.privacy_last_requested = None
+            self.last_hardware_interaction = current_time
             logger.info(f"User de-requested privacy")
 
     def refresh_client_state(self):
