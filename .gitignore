@@ -172,6 +172,7 @@ cython_debug/
 
 temps/
 infra.py
+infra.json
 
 data/
 partials/
