@@ -44,7 +44,7 @@ echo
 # Construct project-specific files
 
 echo "Creating project-specific files (infra.py, etc)"
-envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/infra.py"
+envsubst < "$OCTAVIO_PROJECT_PATH/setup/infra_template.txt" > "$OCTAVIO_PROJECT_PATH/client/infra.json"
 
 echo
 
