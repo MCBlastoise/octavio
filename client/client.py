@@ -103,7 +103,7 @@ class OctavioClient:
 
     def create_new_session(self):
         session_id = utils.generate_id()
-        logger.info(f"Creating new session {self.session}")
+        logger.info(f"Creating new session {session_id}")
 
         self.session = session_id
         self.chunks_sent = 0
