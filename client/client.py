@@ -73,6 +73,8 @@ class OctavioClient:
         self.silence = 0
         self.end_stream_flag = False
 
+        logger.info(f"System starting session is {self.session}")
+
         if os.path.isdir(self.temp_dir):
             shutil.rmtree(self.temp_dir)
         os.makedirs(self.temp_dir, exist_ok=True)
@@ -179,7 +181,7 @@ class OctavioClient:
                 'Content-Type': 'application/json'
             }
 
-            logger.info("Attempting to transmit MIDI")
+            logger.info(f"Attempting to transmit MIDI for session {self.session}")
 
             for i in range(self.num_server_attempts):
                 try:
@@ -192,7 +194,7 @@ class OctavioClient:
                     logger.info(f"Failed attempt {i + 1} to contact server with request, retrying...")
                     time.sleep(self.server_retry_wait_seconds)
                 else:
-                    logger.info("MIDI transmitted successfully")
+                    logger.info(f"MIDI transmitted successfully for session {self.session}")
                     self.chunks_sent += 1
                     return None, pyaudio.paContinue
 
