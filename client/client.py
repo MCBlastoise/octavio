@@ -124,7 +124,9 @@ class OctavioClient:
             (session_duration >= self.session_cap_minutes)
         ):
             self.end_stream_flag = True
-        elif self.hardware.button_pressed and self.is_recording:
+        elif (self.hardware.button_pressed and
+              self.is_recording and
+              current_time - self.last_hardware_interaction >= 2.0):
             self.privacy_last_requested = current_time
             self.last_hardware_interaction = current_time
             self.end_stream_flag = True
