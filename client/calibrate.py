@@ -132,41 +132,8 @@ def denoise_signal(signal, noise_quartiles, signal_quartiles):
 
     return denoised_signal
 
-# def read_wav(filename):
-#     sample_rate, data = scipy.io.wavfile.read(filename)
-
-#     # Convert to float32 for processing, if it's int16
-#     if data.dtype == np.int16:
-#         data = data.astype(np.float64)
-
-#     return data, sample_rate
-
-# def write_wav(filename, audio_array):
-#     int16_audio = np.int16(audio_array)
-#     scipy.io.wavfile.write(filename, 22050, int16_audio)
-
 if __name__ == '__main__':
     ...
 
-    # noise_quartiles, noise_mean, noise_std, signal_quartiles, signal_mean, signal_std = measure_calibration()
-    # apply_calibration(noise_quartiles, noise_mean, noise_std, signal_quartiles, signal_mean, signal_std)
-
-
-    # noise_quartiles = [3.800056535779002, 3.852695381507288, 4.000701825621752]
-    # # signal_quartiles = [3.9466968308970776, 5.681249957410223, 16.480802509792568]
-    # signal_quartiles = [9.704052657907255, 34.39102564355653, 91.2482854118153]
-    # # signal_quartiles = [4.455043171009717, 20, 27.538433453552358]
-    # # signal_quartiles = [4.455043171009717, 100, 27.538433453552358]
-    # # signal_quartiles = [4.455043171009717, 4.0, 27.538433453552358]
-
-    # # input('Start test:')
-    # # signal = record_audio(30)
-    # # write_wav('original.wav', signal)
-
-    # # signal, _ = read_wav('./original.wav')
-    # ambient, _ = read_wav('./ambient.wav')
-    # # print(ambient)
-    # # raise NotImplementedError
-
-    # denoised = denoise_signal(signal=ambient, noise_quartiles=noise_quartiles, signal_quartiles=signal_quartiles)
-    # write_wav('denoised_ambient.wav', denoised)
+    noise_quartiles, noise_mean, noise_std, signal_quartiles, signal_mean, signal_std = measure_calibration()
+    apply_calibration(noise_quartiles, noise_mean, noise_std, signal_quartiles, signal_mean, signal_std)
