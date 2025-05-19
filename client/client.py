@@ -87,7 +87,9 @@ class OctavioClient:
             self.infra = json.load(f)
 
         self.instrument_id = self.infra['INSTRUMENT_ID']
-        if 'RECORDING_DEVICE_INDEX' not in self.infra:
+        if 'RECORDING_DEVICE_INDEX' in self.infra:
+            self.device_index = self.infra['RECORDING_DEVICE_INDEX']
+        else:
             self.device_index = self.identify_recording_device()
 
         if 'NOISE_25TH_PERCENTILE' in self.infra:
