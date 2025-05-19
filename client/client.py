@@ -14,7 +14,8 @@ import requests
 import numpy as np
 import shutil
 import signal
-import infra
+# import infra
+import json
 from hardware import OctavioHardware
 import utils
 with log_utils.no_stderr():
@@ -75,7 +76,12 @@ class OctavioClient:
         self.silence = 0
         self.end_stream_flag = False
 
-        logger.info(f"System starting session is {self.session}")
+        with open('./infra.json', 'r') as f:
+            self.infra = json.load(f)
+
+        self.instrument_id = self.infra['INSTRUMENT_ID']
+        if 'RECORDING_DEVICE_INDEX' not in self.infra:
+            self.device_index = self.identify_recording_device()
 
         if os.path.isdir(self.temp_dir):
             shutil.rmtree(self.temp_dir)
@@ -91,12 +97,13 @@ class OctavioClient:
 
         logger.info("AMT model successfully warmed up")
 
-        try:
-            self.device_index = infra.RECORDING_DEVICE_INDEX
-        except NameError:
-            self.device_index = self.identify_recording_device()
+        # try:
+        #     self.device_index = infra.RECORDING_DEVICE_INDEX
+        # except NameError:
+        #     self.device_index = self.identify_recording_device()
 
         logger.info("System initialized successfully")
+        logger.info(f"System starting session is {self.session}")
 
     def on_shutdown(self):
         logger.info('System shutting down, performing hardware teardown')
@@ -179,7 +186,7 @@ class OctavioClient:
                 self.silence = 0
 
             request_data = {
-                'instrument_id': infra.INSTRUMENT_ID,
+                'instrument_id': self.instrument_id,
                 'session_id': self.session,
                 'chunk': self.chunks_sent,
                 **midi_info
