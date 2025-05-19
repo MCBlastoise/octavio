@@ -44,6 +44,7 @@ class OctavioClient:
     num_server_attempts = 3
     server_retry_wait_seconds = 15
     server_failure_wait_seconds = 60
+    hardware_interaction_wait_seconds = 1.5
 
     temp_dir = './temps'
 
@@ -126,7 +127,8 @@ class OctavioClient:
             self.end_stream_flag = True
         elif (self.hardware.button_pressed and
               self.is_recording and
-              current_time - self.last_hardware_interaction >= 2.0):
+              current_time - self.last_hardware_interaction >= self.hardware_interaction_wait_seconds
+        ):
             self.privacy_last_requested = current_time
             self.last_hardware_interaction = current_time
             self.end_stream_flag = True
@@ -134,7 +136,7 @@ class OctavioClient:
         elif (
             self.hardware.button_pressed and
             not self.is_recording and
-            current_time - self.last_hardware_interaction >= 2.0
+            current_time - self.last_hardware_interaction >= self.hardware_interaction_wait_seconds
         ):
             self.privacy_last_requested = None
             self.last_hardware_interaction = current_time
