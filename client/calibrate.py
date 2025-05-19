@@ -4,14 +4,12 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-import time
 import statistics
 import json
 import numpy as np
 import pyaudio
-import log_utils
 import scipy.ndimage
-import scipy.io
+import log_utils
 
 def record_audio(record_seconds):
     CHUNK = 1024
@@ -105,7 +103,7 @@ def apply_calibration(noise_quartiles, noise_mean, noise_std, signal_quartiles, 
         f.write('\n')
 
 def denoise_signal(signal, noise_quartiles, signal_quartiles):
-    # Accepts an np.float64 array
+    # Accepts and returns an np.float64 array
 
     _, noise_median, _ = noise_quartiles
     _, signal_median, _ = signal_quartiles

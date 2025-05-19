@@ -1,18 +1,26 @@
+import os
+import sys
+client_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "./client"))
+if client_directory not in sys.path:
+    sys.path.insert(0, client_directory)
+
 import log_utils
 import string
 import numpy as np
-import pyaudio
-import wave
+# import pyaudio
+# import wave
 from scipy.io.wavfile import read
-import shlex
-import subprocess
+# import shlex
+# import subprocess
 import mido
 import random
 import shutil
 from pathlib import Path
-import os
+# import os
 with log_utils.no_stderr():
     from basic_pitch.inference import predict_and_save
+import scipy.io
+import calibrate
 
 def generate_id():
     id_options = string.ascii_lowercase + string.digits
@@ -23,18 +31,28 @@ def wav_to_np(wav_filename):
     file_data = np.array(file_contents[1])
     return file_data
 
-def save_frames_to_file(frame_data, filename):
-    audio = pyaudio.PyAudio()
-    FORMAT = pyaudio.paInt16
-    SAMPLING_RATE = 22050
-    NUM_CHANNELS = 1
+# def write_wav(filename, audio_array):
+#     int16_audio = np.int16(audio_array)
+#     scipy.io.wavfile.write(filename, 22050, int16_audio)
 
-    waveFile = wave.open(filename, 'wb')
-    waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-    waveFile.setnchannels(NUM_CHANNELS)
-    waveFile.setframerate(SAMPLING_RATE)
-    waveFile.writeframes(bytes(frame_data))
-    waveFile.close()
+def save_frames_to_file(input_data, filename):
+    # Accepts input_data as an np.float64 array
+
+    # audio = pyaudio.PyAudio()
+    # FORMAT = pyaudio.paInt16
+    # SAMPLING_RATE = 22050
+    # NUM_CHANNELS = 1
+
+    # waveFile = wave.open(filename, 'wb')
+    # waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+    # waveFile.setnchannels(NUM_CHANNELS)
+    # waveFile.setframerate(SAMPLING_RATE)
+    # waveFile.writeframes(bytes(frame_data))
+    # waveFile.close()
+
+    SAMPLING_RATE = 22050
+    int16_audio = np.int16(input_data)
+    scipy.io.wavfile.write(filename, SAMPLING_RATE, int16_audio)
 
 # def convert_to_midi(input_audio, output_filename, ignore_warnings=True):
 #     command = f'transkun {input_audio} {output_filename}'
@@ -136,45 +154,45 @@ def combine_midi(midi_filename1, midi_filename2, output_filename):
 
     output_mid.save(output_filename)
 
-def extract_midi(input_data, bp_model, temp_dir='./temps'):
-        temp_id = generate_id()
-        unique_temp_dir = f'{temp_dir}/{temp_id}'
-        os.makedirs(unique_temp_dir, exist_ok=True)
+def preprocess_audio(input_data, noise_quartiles, signal_quartiles):
+    # Expects an np.float64 array, outputs one as well
+    denoised = calibrate.denoise_signal(signal=input_data, noise_quartiles=noise_quartiles, signal_quartiles=signal_quartiles)
+    return denoised
 
-        wav_filename = f'{unique_temp_dir}/{temp_id}.wav'
-        # mid_filename = f'{unique_temp_dir}/{temp_id}.mid'
+def extract_midi(input_bytes, bp_model, noise_quartiles, signal_quartiles, temp_dir='./temps'):
+    temp_id = generate_id()
+    unique_temp_dir = f'{temp_dir}/{temp_id}'
+    os.makedirs(unique_temp_dir, exist_ok=True)
 
-        save_frames_to_file(frame_data=input_data, filename=wav_filename)
+    # Handle data preprocessing
+    input_data = np.frombuffer(input_bytes, dtype=np.int16).astype(np.float64) # assumes PyAudio dtype is pyaudio.paInt16
+    preprocessed_audio = preprocess_audio(input_data=input_data, noise_quartiles=noise_quartiles, signal_quartiles=signal_quartiles)
 
-        # print("Frames saved to file")
+    wav_filename = f'{unique_temp_dir}/{temp_id}.wav'
+    save_frames_to_file(input_data=preprocessed_audio, filename=wav_filename)
+    mid_filename = convert_to_midi_bp(input_audio=wav_filename, output_dir=unique_temp_dir, bp_model=bp_model)
+    empty = midi_is_empty(midi_filename=mid_filename)
 
-        # convert_to_midi(input_audio=wav_filename, output_filename=mid_filename)
-        mid_filename = convert_to_midi_bp(input_audio=wav_filename, output_dir=unique_temp_dir, bp_model=bp_model)
+    serialized_msgs, tpb = serialize_midi_file(midi_filename=mid_filename)
+    midi_info = {
+        'ticks_per_beat': tpb,
+        'messages': serialized_msgs,
+        'is_empty': empty
+    }
 
-        # print("Converted to MIDI")
+    try:
+        shutil.rmtree(unique_temp_dir)
+    except FileNotFoundError:
+        # print(f'{unique_temp_dir} already deleted')
+        pass
 
-        empty = midi_is_empty(midi_filename=mid_filename)
+    # for filename in (wav_filename, mid_filename):
+    #     try:
+    #         os.remove(filename)
+    #     except FileNotFoundError:
+    #         print(f'{filename} already deleted')
 
-        serialized_msgs, tpb = serialize_midi_file(midi_filename=mid_filename)
-        midi_info = {
-            'ticks_per_beat': tpb,
-            'messages': serialized_msgs,
-            'is_empty': empty
-        }
-
-        try:
-            shutil.rmtree(unique_temp_dir)
-        except FileNotFoundError:
-            # print(f'{unique_temp_dir} already deleted')
-            pass
-
-        # for filename in (wav_filename, mid_filename):
-        #     try:
-        #         os.remove(filename)
-        #     except FileNotFoundError:
-        #         print(f'{filename} already deleted')
-
-        return midi_info
+    return midi_info
 
 def serialize_midi_file(midi_filename):
     mid = mido.MidiFile(midi_filename)

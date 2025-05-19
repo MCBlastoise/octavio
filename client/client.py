@@ -47,6 +47,13 @@ class OctavioClient:
     server_failure_wait_seconds = 60
     hardware_interaction_wait_seconds = 1.5
 
+    default_noise_quartiles = (3.80, 3.85, 4.00)
+    default_noise_mean = 4.14
+    default_noise_std = 2.26
+    default_signal_quartiles = (9.70, 34.39, 91.24)
+    default_signal_mean = 73.10
+    default_signal_std = 125.83
+
     temp_dir = './temps'
 
     # server_url = 'http://127.0.0.1:5001'
@@ -82,6 +89,30 @@ class OctavioClient:
         self.instrument_id = self.infra['INSTRUMENT_ID']
         if 'RECORDING_DEVICE_INDEX' not in self.infra:
             self.device_index = self.identify_recording_device()
+
+        if 'NOISE_25TH_PERCENTILE' in self.infra:
+            self.noise_quartiles = (
+                self.infra['NOISE_25TH_PERCENTILE'],
+                self.infra['NOISE_50TH_PERCENTILE'],
+                self.infra['NOISE_75TH_PERCENTILE']
+            )
+            self.noise_mean = self.infra['NOISE_MEAN']
+            self.noise_std = self.infra['NOISE_STD']
+
+            self.signal_quartiles = (
+                self.infra['SIGNAL_25TH_PERCENTILE'],
+                self.infra['SIGNAL_50TH_PERCENTILE'],
+                self.infra['SIGNAL_75TH_PERCENTILE']
+            )
+            self.signal_mean = self.infra['SIGNAL_MEAN']
+            self.signal_std = self.infra['SIGNAL_STD']
+        else:
+            self.noise_quartiles = self.default_noise_quartiles
+            self.noise_mean = self.default_noise_mean
+            self.noise_std = self.default_noise_std
+            self.signal_quartiles = self.default_signal_quartiles
+            self.signal_mean = self.default_signal_mean
+            self.signal_std = self.default_signal_std
 
         if os.path.isdir(self.temp_dir):
             shutil.rmtree(self.temp_dir)
@@ -175,7 +206,13 @@ class OctavioClient:
     def record_audio(self):
         def mic_callback(input_data, frame_count, time_info, flags):
             logger.info("Attempting to extract MIDI")
-            midi_info = utils.extract_midi(input_data=input_data, bp_model=self.bp_model, temp_dir=self.temp_dir)
+            midi_info = utils.extract_midi(
+                input_bytes=input_data,
+                bp_model=self.bp_model,
+                noise_quartiles=self.noise_quartiles,
+                signal_quartiles=self.signal_quartiles,
+                temp_dir=self.temp_dir
+            )
             logger.info("MIDI extracted")
 
             if midi_info['is_empty']:
