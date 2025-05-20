@@ -1,6 +1,7 @@
 [Unit]
 Description=AutoSSH Reverse Tunnel to Lab Server
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 User=${CLIENT_USERNAME}
