@@ -32,3 +32,12 @@ def add_or_refresh_db_session(session_id, instrument_id, is_test=False):
         with closing(connection.cursor()) as cursor:
             cursor.execute(update_sql, (session_id, instrument_id))
             connection.commit()
+
+def get_db_instruments(is_test=False):
+    db_filename = server_utils.get_db_filename(is_test)
+    get_instrument_sql = "SELECT * FROM instruments;"
+    with sqlite3.connect(db_filename) as connection:
+        with closing(connection.cursor()) as cursor:
+            cursor.execute(get_instrument_sql)
+            rows = cursor.fetchall()
+    return rows

@@ -111,6 +111,12 @@ def add_piano_music():
     # utils.display_midi(out_filename)
     return 'Success'
 
+@app.route("/instruments", methods=['GET'])
+def get_instruments():
+    is_test = current_app.config['is_test']
+    instrument_rows = db_queries.get_db_instruments(is_test)
+    return instrument_rows
+
 @app.route("/keyboard", methods=['POST'])
 def add_keyboard_music():
     raise NotImplementedError

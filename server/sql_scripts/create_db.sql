@@ -8,3 +8,12 @@ CREATE TABLE IF NOT EXISTS sessions (
     song_key TEXT,
     UNIQUE(session_id, instrument_id)
 );
+
+CREATE TABLE IF NOT EXISTS instruments (
+    id INTEGER PRIMARY KEY,
+    instrument_id TEXT NOT NULL,
+    instrument_type INTEGER NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    label TEXT NOT NULL
+);

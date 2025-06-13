@@ -46,7 +46,7 @@ def inspect_db(is_test=False):
 
             print('')
 
-            data_display_sql = "SELECT * FROM sessions LIMIT 10"
+            data_display_sql = "SELECT * FROM sessions LIMIT 10;"
             data = cursor.execute(data_display_sql).fetchall()
             print('Data:\n')
             print(data)
@@ -61,6 +61,6 @@ if __name__ == '__main__':
     # insert_test_data()
     # inspect_db(is_test=is_test)
 
-    is_test = False
-    create_db(is_test=is_test)
-    inspect_db(is_test=is_test)
+    # is_test = False
+    # create_db(is_test=is_test)
+    # inspect_db(is_test=is_test)
