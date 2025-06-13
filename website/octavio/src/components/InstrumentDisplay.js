@@ -34,7 +34,9 @@ export default function InstrumentDisplay({ instrument_id }) {
                             aria-controls="panel1-content"
                             id="panel1-header"
                         >
-                            <Typography component="span">{session.session_id}</Typography>
+                            <Typography component="span" variant="h3">
+                                Session <Box component="span" sx={{fontStyle: "italic"}}>{session.session_id}</Box>
+                            </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             {containerIsExpanded && <SessionVisualizer session={session} />}
@@ -51,9 +53,9 @@ export default function InstrumentDisplay({ instrument_id }) {
     )
 
     return (
-        <Box padding={5}>
-            <Stack gap={3}>
-                <Typography>Recent sessions from instrument {instrument_id}</Typography>
+        <Box padding={12}>
+            <Stack gap={5}>
+                <Typography variant="h1">Recent sessions from Instrument {instrument_id}</Typography>
                 <Stack rowGap={5}>
                     {vizContainers}
                 </Stack>

@@ -191,7 +191,17 @@ export default function SessionVisualizer({ session }) {
   return (
     <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', p: 3 }}>
       <Widget sx={{ width: '100%', height: '100%' }}>
-        <Box ref={scrollRef} sx={{ width: '100%', height: '100%', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 0 }}>
+        <Box
+          ref={scrollRef}
+          sx={{
+            width: '100%',
+            height: '100%',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            scrollbarWidth: 'none', // Firefox
+            msOverflowStyle: 'none', // IE/Edge
+            '&::-webkit-scrollbar': { display: 'none'}
+          }}>
             <svg ref={svgRef} width='80%' height='90%' />
         </Box>
 

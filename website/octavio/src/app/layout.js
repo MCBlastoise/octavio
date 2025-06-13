@@ -1,16 +1,25 @@
 'use client';
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Jost } from "next/font/google";
 import "./globals.css";
 import { Box } from "@mui/material";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from '@/styles/theme'; // adjust the path to where your theme is
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+
+const jost = Jost({
+  variable: "--font-jost",
   subsets: ["latin"],
 });
 
@@ -22,10 +31,14 @@ const geistMono = Geist_Mono({
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Box component="main" sx={{ height: '100%', width: '100%' }}>
-          {children}
-        </Box>
+      <body>
+
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Box component="main" sx={{ height: '100%', width: '100%' }}>
+            {children}
+          </Box>
+        </ThemeProvider>
       </body>
     </html>
   );
