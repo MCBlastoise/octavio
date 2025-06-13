@@ -40,5 +40,6 @@ def get_db_instruments(is_test=False):
         connection.row_factory = sqlite3.Row  # This is the magic
         with closing(connection.cursor()) as cursor:
             cursor.execute(get_instrument_sql)
-            rows_obj = cursor.fetchall()
-    return dict(rows_obj)
+            rows = cursor.fetchall()
+    data = [dict(row) for row in rows]
+    return data

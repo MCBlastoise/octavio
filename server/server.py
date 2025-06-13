@@ -114,8 +114,8 @@ def add_piano_music():
 @app.route("/instruments", methods=['GET'])
 def get_instruments():
     is_test = current_app.config['is_test']
-    instrument_rows = db_queries.get_db_instruments(is_test)
-    return instrument_rows
+    instruments = db_queries.get_db_instruments(is_test)
+    return instruments
 
 @app.route("/keyboard", methods=['POST'])
 def add_keyboard_music():
