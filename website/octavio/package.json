@@ -11,12 +11,15 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@magenta/music": "^1.23.1",
+    "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.0",
     "maplibre-gl": "^5.5.0",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-map-gl": "^8.0.4"
+    "react-map-gl": "^8.0.4",
+    "tone": "14.7.77"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
