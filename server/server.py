@@ -113,13 +113,13 @@ def add_piano_music():
     # utils.display_midi(out_filename)
     return 'Success'
 
-@app.route("/instruments", methods=['GET'])
+@app.route("/api/instruments", methods=['GET'])
 def get_instruments():
     is_test = current_app.config['is_test']
     instruments = db_queries.get_db_instruments(is_test)
     return instruments
 
-@app.route('/midi', methods=['GET'])
+@app.route('/api/midi', methods=['GET'])
 def get_midi():
     query_params = request.args
     sid = query_params['session_id']

@@ -17,7 +17,7 @@ export default function OpenMap() {
     const [ instruments, setInstruments ] = useState(null);
 
     useEffect(() => {
-        fetch('http://octavio-server.mit.edu:5001/instruments')
+        fetch('http://octavio-server.mit.edu:5001/api/instruments')
             .then(res => res.json())
             .then(data => setInstruments(data));
     }, []);
