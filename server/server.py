@@ -4,7 +4,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from flask import Flask, request, current_app
+from flask import Flask, request, current_app, send_file
 from flask_cors import CORS
 import numpy as np
 import pyaudio
@@ -118,6 +118,20 @@ def get_instruments():
     is_test = current_app.config['is_test']
     instruments = db_queries.get_db_instruments(is_test)
     return instruments
+
+@app.route('/midi', methods=['GET'])
+def get_midi():
+    query_params = request.args
+    sid = query_params['session_id']
+    iid = query_params['instrument_id']
+    return str(os.listdir('./'))
+
+    # return send_file(
+    #     'path/to/your/file.mid',
+    #     mimetype='audio/midi',
+    #     as_attachment=False,
+    #     download_name='music.mid'
+    # )
 
 @app.route("/keyboard", methods=['POST'])
 def add_keyboard_music():
