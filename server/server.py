@@ -125,13 +125,14 @@ def get_midi():
     sid = query_params['session_id']
     iid = query_params['instrument_id']
     # midi_filename = f'./data/{sid}_{iid}.mid'
-    midi_filename = f'./data/h51lz3k5hx_5.mid'
+    midi_filename = 'h51lz3k5hx_5.mid'
+    midi_filepath = f'./data/{midi_filename}'
 
     return send_file(
-        midi_filename,
+        midi_filepath,
         mimetype='audio/midi',
         as_attachment=False,
-        download_name='music.mid'
+        download_name=midi_filename
     )
 
 @app.route("/keyboard", methods=['POST'])
