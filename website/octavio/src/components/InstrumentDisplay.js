@@ -1,53 +1,67 @@
 'use client';
 
-import { Box } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 // import * as mm from '@magenta/music';
 import { Player, PianoRollSVGVisualizer, midiToSequenceProto } from '@magenta/music';
 import SessionVisualizer from '@/components/SessionVisualizer';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export default function InstrumentDisplay({ instrument_id }) {
-    // const [ midiSequence, setMidiSequence ] = useState(null);
-    // const svgRef = useRef(null);
-    // const [player, setPlayer] = useState(null);
-    // const [visualizer, setVisualizer] = useState(null);
+    const [ instrument_sessions, setInstrumentSessions ] = useState(null);
+    const [expanded, setExpanded] = useState(null); // track which panel is open
 
-    // useEffect(() => {
-    //     fetch('http://octavio-server.mit.edu:5001/api/midi?session_id=1&instrument_id=2')
-    //         .then(res => res.arrayBuffer())
-    //         .then(arrayBuffer => setMidiSequence(midiToSequenceProto(arrayBuffer)))
-    // }, []);
+    const handleAccordionChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : null);
+    };
 
-    // useEffect(() => {
-    //     if (!midiSequence || !svgRef.current) return;
+    useEffect(() => {
+        fetch(`http://octavio-server.mit.edu:5001/api/instrument?instrument_id=${instrument_id}`)
+            .then(res => res.json())
+            .then(sessions => setInstrumentSessions(sessions))
+    }, []);
 
-    //     // Create visualizer
-    //     const vis = new PianoRollSVGVisualizer(
-    //         midiSequence,
-    //         svgRef.current,
-    //         {
-    //             noteHeight: 6,
-    //             pixelsPerTimeStep: 60,
-    //         });
-    //     setVisualizer(vis);
+    // const selectedInstrument
 
-    //     // Create player with run callback to update visualizer
-    //     const newPlayer = new Player(false, {
-    //         run: (note) => vis.redraw(note),
-    //         stop: () => console.log('Playback finished'),
-    //     });
-    //     setPlayer(newPlayer);
-    // }, [midiSequence]);
+    const vizContainers = !!instrument_sessions && instrument_sessions.map(
+        session => {
+            const containerIsExpanded = expanded === session.session_id
+            return (
+                <Box key={session.id} sx={{ width: "75%" }}>
+                    <Accordion expanded={containerIsExpanded} onChange={handleAccordionChange(session.session_id)}>
+                        <AccordionSummary
+                            expandIcon={<ArrowDropDownIcon />}
+                            aria-controls="panel1-content"
+                            id="panel1-header"
+                        >
+                            <Typography component="span">{session.session_id}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {containerIsExpanded && <SessionVisualizer session={session} />}
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
 
-    // const handlePlay = () => {
-    //     if (player && midiSequence) {
-    //         player.start(midiSequence);
-    //     }
-    // };
+                // <Accordion key={session.id}>
+                //     {/* <SessionVisualizer key={session.id} session_id={'leit50a4t1'} instrument_id={'1'} /> */}
+                //     <SessionVisualizer session={session} />
+                // </Accordion>
+            )
+        }
+    )
 
     return (
-        <Box>
-            <SessionVisualizer session_id={'leit50a4t1'} instrument_id={'1'} />
+        <Box padding={5}>
+            <Stack gap={3}>
+                <Typography>Recent sessions from instrument {instrument_id}</Typography>
+                <Stack rowGap={5}>
+                    {vizContainers}
+                </Stack>
+            </Stack>
+
+
+            {/* {!!instrument_sessions && instrument_sessions.map(session => <SessionVisualizer key={session.id} session_id={'leit50a4t1'} instrument_id={'1'} />)} */}
+            {/* <SessionVisualizer session_id={'leit50a4t1'} instrument_id={'1'} /> */}
             {/* <Box sx={{ width: '800px', height: '200px', overflowX: 'auto', overflowY: 'hidden' }}>
                 <svg ref={svgRef} width={800} height={200} />
             </Box>

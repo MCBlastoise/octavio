@@ -36,7 +36,10 @@ const TinyText = styled(Typography)({
   letterSpacing: 0.2,
 });
 
-export default function SessionVisualizer({ session_id, instrument_id }) {
+export default function SessionVisualizer({ session }) {
+
+    const session_id = session.session_id;
+    const instrument_id = session.instrument_id;
 
     const [ midiSequence, setMidiSequence ] = useState(null);
     const svgRef = useRef(null);
@@ -101,6 +104,16 @@ export default function SessionVisualizer({ session_id, instrument_id }) {
           }
         };
     }, [player]);
+
+    useEffect(() => {
+      return () => {
+        if (!!player && player.isPlaying()) {
+          player.stop();
+        }
+        // Optional: Tone.Transport.stop(); if you want to fully halt transport
+      };
+    }, [player]);
+
 
     const handlePlay = () => {
         if (player && midiSequence) {
@@ -177,9 +190,9 @@ export default function SessionVisualizer({ session_id, instrument_id }) {
 
   return (
     <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', p: 3 }}>
-      <Widget>
-        <Box ref={scrollRef} sx={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 0 }}>
-            <svg ref={svgRef} width={800} height={200} />
+      <Widget sx={{ width: '100%', height: '100%' }}>
+        <Box ref={scrollRef} sx={{ width: '100%', height: '100%', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 0 }}>
+            <svg ref={svgRef} width='80%' height='90%' />
         </Box>
 
         {/* <PlaybackSlider duration={duration} position={position}></PlaybackSlider> */}
