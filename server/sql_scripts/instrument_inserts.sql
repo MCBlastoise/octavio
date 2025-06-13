@@ -10,7 +10,7 @@ INSERT INTO instruments
 
 INSERT INTO instruments
     (instrument_id, instrument_type, latitude, longitude, label)
-    VALUES (4, 0, 42.3598, -71.0910, 'Piano Practice Studio 4-260k');
+    VALUES (4, 0, 42.359524, -71.0912222, 'Piano Practice Studio 4-260k');
 
 INSERT INTO instruments
     (instrument_id, instrument_type, latitude, longitude, label)
@@ -22,7 +22,7 @@ INSERT INTO instruments
 
 INSERT INTO instruments
     (instrument_id, instrument_type, latitude, longitude, label)
-    VALUES (7, 0, 42.3578, -71.0947, 'McCormick Brown Living Room');
+    VALUES (7, 0, 42.3572587, -71.0946054, 'McCormick Brown Living Room');
 
 INSERT INTO instruments
     (instrument_id, instrument_type, latitude, longitude, label)
