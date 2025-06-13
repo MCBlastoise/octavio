@@ -124,8 +124,8 @@ def get_midi():
     query_params = request.args
     sid = query_params['session_id']
     iid = query_params['instrument_id']
-    # midi_filename = f'./data/{sid}_{iid}.mid'
-    midi_filename = 'leit50a4t1_1.mid'
+    midi_filename = f'./data/{sid}_{iid}.mid'
+    # midi_filename = 'leit50a4t1_1.mid'
     midi_filepath = f'./data/{midi_filename}'
 
     return send_file(
@@ -134,6 +134,14 @@ def get_midi():
         as_attachment=False,
         download_name=midi_filename
     )
+
+@app.route('/api/instrument', methods=['GET'])
+def get_midi():
+    is_test = current_app.config['is_test']
+    query_params = request.args
+    iid = query_params['instrument_id']
+    sessions = db_queries.get_instrument_sessions(instrument_id=iid, is_test=is_test)
+    return sessions
 
 @app.route("/keyboard", methods=['POST'])
 def add_keyboard_music():

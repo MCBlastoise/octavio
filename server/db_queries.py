@@ -43,3 +43,22 @@ def get_db_instruments(is_test=False):
             rows = cursor.fetchall()
     data = [dict(row) for row in rows]
     return data
+
+def get_instrument_sessions(instrument_id, is_test=False):
+    db_filename = server_utils.get_db_filename(is_test)
+    get_sessions_sql = """
+        SELECT
+        *,
+        (julianday(last_updated) - julianday(created_at)) * 86400 AS duration_in_seconds
+        FROM sessions
+        WHERE instrument_id = ? AND duration_in_seconds >= 120
+        ORDER BY last_updated DESC
+        LIMIT 5;
+    """
+    with sqlite3.connect(db_filename) as connection:
+        connection.row_factory = sqlite3.Row  # This is the magic
+        with closing(connection.cursor()) as cursor:
+            cursor.execute(get_sessions_sql, (instrument_id,))
+            rows = cursor.fetchall()
+    data = [dict(row) for row in rows]
+    return data
