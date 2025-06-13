@@ -37,6 +37,7 @@ def get_db_instruments(is_test=False):
     db_filename = server_utils.get_db_filename(is_test)
     get_instrument_sql = "SELECT * FROM instruments;"
     with sqlite3.connect(db_filename) as connection:
+        connection.row_factory = sqlite3.Row  # This is the magic
         with closing(connection.cursor()) as cursor:
             cursor.execute(get_instrument_sql)
             rows = cursor.fetchall()
