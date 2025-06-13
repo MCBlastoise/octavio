@@ -5,6 +5,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from flask import Flask, request, current_app
+from flask_cors import CORS
 import numpy as np
 import pyaudio
 import wave
@@ -28,6 +29,7 @@ handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"
 logger.addHandler(handler)
 
 app = Flask(__name__)
+CORS(app)
 file_counter = 0
 
 # Set prod-server or test-server (default=prod)
