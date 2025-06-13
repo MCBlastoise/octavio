@@ -124,7 +124,8 @@ def get_midi():
     query_params = request.args
     sid = query_params['session_id']
     iid = query_params['instrument_id']
-    midi_filename = f'./data/{sid}_{iid}.mid'
+    # midi_filename = f'./data/{sid}_{iid}.mid'
+    midi_filename = f'./data/h51lz3k5hx_5.mid'
 
     return send_file(
         midi_filename,
