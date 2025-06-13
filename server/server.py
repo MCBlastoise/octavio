@@ -136,7 +136,7 @@ def get_midi():
     )
 
 @app.route('/api/instrument', methods=['GET'])
-def get_midi():
+def get_instrument_data():
     is_test = current_app.config['is_test']
     query_params = request.args
     iid = query_params['instrument_id']
