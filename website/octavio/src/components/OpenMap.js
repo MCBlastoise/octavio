@@ -5,14 +5,26 @@ import { LngLat, LngLatBounds } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Box from "@mui/material/Box"
 import MarkerPopup from './MarkerPopup';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function OpenMap() {
     const swPt = new LngLat(-71.104730, 42.353749);
     const nePt = new LngLat(-71.087138, 42.364879);
     const mitBounds = new LngLatBounds(swPt, nePt);
 
-    const center = new LngLat( (swPt.lng + nePt.lng) / 2, (swPt.lat + nePt.lat) / 2 );
+    // const center = new LngLat( (swPt.lng + nePt.lng) / 2, (swPt.lat + nePt.lat) / 2 );
+
+    const [ instruments, setInstruments ] = useState(null);
+
+    useEffect(() => {
+        fetch('http://octavio-server.mit.edu:5001/instruments')
+            .then(res => res.json())
+            .then(data => setInstruments(data));
+    }, []);
+
+    const markerPopups = !!instruments ?
+                            instruments.map(instrument => <MarkerPopup key={instrument.id} instrument={instrument}/>) :
+                            [];
 
     return (
         <Map
@@ -30,7 +42,8 @@ export default function OpenMap() {
                 <div style={{ color: 'red', fontSize: '24px' }}>📍</div>
             </Marker>
             <Popup longitude={center.lng} latitude={center.lat}></Popup> */}
-            <MarkerPopup latitude={center.lat} longitude={center.lng} />
+            {/* <MarkerPopup latitude={center.lat} longitude={center.lng} /> */}
+            {markerPopups}
         </Map>
     );
 }
