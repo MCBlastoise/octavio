@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import Link from 'next/link'
+import { Box } from '@mui/material';
+
 export default function MarkerPopup({ instrument }) {
     const [popupVisible, setPopupVisible] = useState(false);
 
@@ -13,13 +16,15 @@ export default function MarkerPopup({ instrument }) {
                 longitude={instrument.longitude}
                 latitude={instrument.latitude}
             >
-                <div
-                    style={{ color: 'red', fontSize: '24px' }}
-                    onMouseEnter={ () => {setPopupVisible(true)} }
-                    onMouseLeave={ () => {setPopupVisible(false)} }
-                >
-                    📍
-                </div>
+                <Link href={`/instrument/${instrument.instrument_id}`}>
+                    <Box
+                        sx={{ color: 'red', fontSize: '24px', cursor: 'pointer' }}
+                        onMouseEnter={ () => {setPopupVisible(true)} }
+                        onMouseLeave={ () => {setPopupVisible(false)} }
+                    >
+                        📍
+                    </Box>
+                </Link>
             </Marker>
             {
                 popupVisible &&

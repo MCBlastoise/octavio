@@ -12,8 +12,8 @@ const OpenMap = dynamic(() => import('../components/OpenMap'), {
 
 export default function HomePage() {
   return (
-    <Box component="main" sx={{ height: '100%', width: '100%' }}>
-      <OpenMap />
-    </Box>
+    // <Box component="main" sx={{ height: '100%', width: '100%' }}>
+    <OpenMap />
+    // </Box>
   );
 }
