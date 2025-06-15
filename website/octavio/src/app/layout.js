@@ -2,11 +2,14 @@
 
 import { Geist, Geist_Mono, Jost } from "next/font/google";
 import "./globals.css";
-import { Box } from "@mui/material";
+import { AppBar, Box, Button, IconButton, Toolbar, Typography, Stack } from "@mui/material";
 
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/styles/theme'; // adjust the path to where your theme is
+
+import MenuIcon from '@mui/icons-material/Menu';
+import Link from "next/link";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -35,6 +38,17 @@ export default function RootLayout({ children }) {
 
         <ThemeProvider theme={theme}>
           <CssBaseline />
+
+          <AppBar position="sticky">
+            <Toolbar variant="dense" sx={{ justifyContent: 'center', alignItems: 'center', backgroundColor: "#7b00cb" }}>
+                <Stack direction='row' alignItems='center' gap={2}>
+                  <Link href='/'>
+                    <Button color="inherit">Home</Button>
+                  </Link>
+                </Stack>
+            </Toolbar>
+          </AppBar>
+
           <Box component="main" sx={{ height: '100%', width: '100%' }}>
             {children}
           </Box>
