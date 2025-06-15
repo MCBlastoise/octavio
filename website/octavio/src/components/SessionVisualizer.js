@@ -17,7 +17,7 @@ import * as Tone from 'tone';
 const Widget = styled('div')(({ theme }) => ({
   padding: 16,
   borderRadius: 16,
-  width: 343,
+  // width: 343,
   maxWidth: '100%',
   margin: 'auto',
   position: 'relative',
@@ -77,21 +77,25 @@ export default function SessionVisualizer({ session }) {
                 scrollEl.scrollLeft = scrollPos - 100; // keep some margin
             },
             stop: () => {
-                console.log('Playback finished');
+                // console.log('Playback finished');
                 setPlayingState('finished');
             },
         });
         setPlayer(newPlayer);
     }, [midiSequence]);
 
+    const [isSeeking, setIsSeeking] = useState(false);
+
     useEffect(() => {
         if (!player) return;
 
         const tick = () => {
+          // console.log(isSeeking);
+
           if (!isSeeking && player.isPlaying()) {
             const pos = Tone.Transport.seconds
             setPosition(pos);
-            console.log("pos", pos);
+            // console.log("pos set by animation", pos);
           }
           animationRef.current = requestAnimationFrame(tick);
         };
@@ -103,7 +107,7 @@ export default function SessionVisualizer({ session }) {
             cancelAnimationFrame(animationRef.current);
           }
         };
-    }, [player]);
+    }, [player, isSeeking]);
 
     useEffect(() => {
       return () => {
@@ -139,14 +143,32 @@ export default function SessionVisualizer({ session }) {
         }
     };
 
-    const handleSeek = (_, value) => {
-        // setPlaybackTime(value);
-        if (player && midiSequence && playingState != 'stopped' && playingState != 'finished') {
-          setPosition(value);
-          player.seekTo(value);
-          visualizer.redraw(null);
-        }
-      };
+    // const handleSeek = (_, value) => {
+    //     // setPlaybackTime(value);
+    //     if (player && midiSequence && playingState != 'stopped' && playingState != 'finished') {
+    //       setPosition(value);
+    //       player.seekTo(value);
+    //       visualizer.redraw(null);
+    //     }
+    //   };
+    // const handleSeek = (_, value) => {
+    //   // setPlaybackTime(value);
+    //   if (player && midiSequence && playingState != 'stopped' && playingState != 'finished') {
+    //     // setPosition(value);
+    //     player.seekTo(value);
+    //     visualizer.redraw(null);
+    //   }
+    // };
+
+    function updatePlayerPosition() {
+      if (!player.isPlaying()) {
+        player.start(midiSequence);
+        player.pause(midiSequence);
+      }
+
+      player.seekTo(position);
+      visualizer.redraw(null);
+    }
 
     const duration = !midiSequence ? 0 : midiSequence.totalTime;
 
@@ -156,10 +178,10 @@ export default function SessionVisualizer({ session }) {
 
 
 
-    const [isSeeking, setIsSeeking] = useState(false);
+
     // const duration = 200; // seconds
     const [position, setPosition] = React.useState(0);
-    console.log("position", position);
+    // console.log("position", position);
     // const [paused, setPaused] = React.useState(true);
     const [playingState, setPlayingState] = React.useState('stopped');
     function formatDuration(value) {
@@ -188,9 +210,22 @@ export default function SessionVisualizer({ session }) {
     //   }, [position]);
 
 
+    // const sliderRef = useRef();
+
+    // useEffect(() => {
+    //   if (sliderRef.current) {
+    //     const input = sliderRef.current.querySelector('input[type="range"]');
+    //     if (input) {
+    //       input.value = position;
+    //       input.dispatchEvent(new Event('input', { bubbles: true }));
+    //     }
+    //   }
+    // }, [position]);
+
   return (
     <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', p: 3 }}>
       <Widget sx={{ width: '100%', height: '100%' }}>
+      {/* <Box sx={{ width: '100%', height: '100%', backgroundColor: 'rgba(128,128,128,0.05)', padding: 4, borderRadius: 16 }}> */}
         <Box
           ref={scrollRef}
           sx={{
@@ -207,26 +242,133 @@ export default function SessionVisualizer({ session }) {
 
         {/* <PlaybackSlider duration={duration} position={position}></PlaybackSlider> */}
 
-        <Slider
-          key={Math.floor(position * 100)}
+        {/* <Slider
+          // key={Math.floor(position * 100)}
+          ref={sliderRef}
           aria-label="time-indicator"
           size="small"
           value={position}
           min={0}
           max={duration}
-          step={0.01}
-          onChange={(_, value) => {
-            setIsSeeking(true);
-            // setPosition(value);
-          }}
-          onChangeCommitted={(_, value) => {
-            handleSeek(undefined, value)
-            setIsSeeking(false);
-            // player.seekToPosition(value);
-          }}
+          step={1}
+          // onChange={(_, value) => {
+          //   setIsSeeking(true);
+          //   // setPosition(value);
+          // }}
+          // onChangeCommitted={(_, value) => {
+          //   handleSeek(undefined, value)
+          //   setIsSeeking(false);
+          //   // player.seekToPosition(value);
+          // }}
           sx={sliderSx}
-        />
-        <Box
+        /> */}
+        <Stack direction='row' justifyContent='space-around' alignItems='center'>
+          <TinyText>{formatDuration(position)}</TinyText>
+          <Box
+            component="input"
+            type="range"
+            value={position}
+            // readOnly
+            onMouseDown={
+              (_) => {setIsSeeking(true)}
+              // (e) => setPosition(Number(e.target.value))
+            }
+            onChange={
+              (e) => {setPosition(Number(e.target.value))}
+              // (e) => setPosition(Number(e.target.value))
+            }
+            onMouseUp={
+              (_) => {updatePlayerPosition(); setIsSeeking(false)}
+            }
+            min={0}
+            max={duration}
+            step={0.01}
+
+            sx={{
+              width: "90%",
+              accentColor: "#9f46da",
+              cursor: "pointer",
+              // '&::-webkit-slider-runnable-track': {
+              //   background: "white",
+              //   borderRadius: 2
+              // },
+              // '&::-moz-range-track': {
+              //   background: "white"
+              // },
+              // '&::-ms-track': {
+              //   background: "white"
+              // }
+            }}
+
+            // sx={{
+            //   width: '90%',
+            //   WebkitAppearance: 'none',
+            //   height: 4,
+            //   borderRadius: 2,
+            //   // background: 'transparent',
+            //   outline: 'none',
+            //   cursor: 'pointer',
+
+            //   // Dynamic progress styling using background gradient
+            //   // backgroundImage: `linear-gradient(to right, #9f46da ${(position / duration) * 100}%, white ${(position / duration) * 100}%)`,
+
+            //   '&:hover': {
+            //     opacity: 1,
+            //   },
+
+            //   // Thumb styling
+              // '&::-webkit-slider-thumb': {
+              //   WebkitAppearance: 'none',
+              //   height: 14,
+              //   width: 14,
+              //   borderRadius: '50%',
+              //   background: '#9f46da',
+              //   cursor: 'pointer',
+              //   marginTop: '-5px',
+              //   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+              //   transition: 'background 0.2s',
+              // },
+            //   '&::-moz-range-thumb': {
+            //     height: 14,
+            //     width: 14,
+            //     borderRadius: '50%',
+            //     background: '#9f46da',
+            //     cursor: 'pointer',
+            //     boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+            //   },
+            //   '&::-ms-thumb': {
+            //     height: 14,
+            //     width: 14,
+            //     borderRadius: '50%',
+            //     background: '#9f46da',
+            //     cursor: 'pointer',
+            //   },
+
+            //   // Track fallback for older browsers
+            //   '&::-webkit-slider-runnable-track': {
+            //     height: 4,
+            //     borderRadius: 2,
+            //     background: 'transparent',
+            //   },
+            //   '&::-moz-range-track': {
+            //     height: 4,
+            //     borderRadius: 2,
+            //     background: 'white',
+            //   },
+            //   '&::-ms-track': {
+            //     height: 4,
+            //     borderRadius: 2,
+            //     background: 'transparent',
+            //     borderColor: 'transparent',
+            //     color: 'transparent',
+            //   },
+            // }}
+          />
+          <TinyText>{formatDuration(duration)}</TinyText>
+        </Stack>
+
+
+        {/* <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -236,7 +378,7 @@ export default function SessionVisualizer({ session }) {
         >
           <TinyText>{formatDuration(position)}</TinyText>
           <TinyText>{formatDuration(duration)}</TinyText>
-        </Box>
+        </Box> */}
         <Box
           sx={(theme) => ({
             display: 'flex',
@@ -278,8 +420,10 @@ export default function SessionVisualizer({ session }) {
               <PlayArrowRounded sx={{ fontSize: '3rem' }} />
             )}
           </IconButton>
+          {/* <Typography>{position}</Typography> */}
         </Box>
       </Widget>
+      {/* </Box> */}
     </Box>
   );
 }
