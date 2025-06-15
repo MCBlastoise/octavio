@@ -164,6 +164,7 @@ export default function SessionVisualizer({ session }) {
       if (!player.isPlaying()) {
         player.start(midiSequence);
         player.pause(midiSequence);
+        setPlayingState('paused');
       }
 
       player.seekTo(position);
