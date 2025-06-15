@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -18,11 +19,12 @@ export default function MarkerPopup({ instrument }) {
             >
                 <Link href={`/instrument/${instrument.instrument_id}`}>
                     <Box
-                        sx={{ color: 'red', fontSize: '24px', cursor: 'pointer' }}
+                        // sx={{ color: 'red', fontSize: '24px', cursor: 'pointer' }}
                         onMouseEnter={ () => {setPopupVisible(true)} }
                         onMouseLeave={ () => {setPopupVisible(false)} }
                     >
-                        📍
+                        {/* 🎹 */}
+                        <Image src="/piano.svg" alt="Piano Icon" width={24} height={24} />
                     </Box>
                 </Link>
             </Marker>
